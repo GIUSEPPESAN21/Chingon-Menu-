@@ -11,21 +11,45 @@ st.set_page_config(
 # --- ESTILOS CSS PERSONALIZADOS ---
 st.markdown("""
     <style>
-    .stApp { background-color: #0e1117; color: #ffffff; }
-    h1 { color: #00ffcc; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; }
-    h2 { color: #ff007f; border-bottom: 2px solid #333; padding-bottom: 10px; margin-top: 30px; }
-    .precio-highlight { color: #00ffcc; font-size: 1.4rem; font-weight: 900; margin-bottom: 5px; }
-    .st-emotion-cache-1v0mbdj { background-color: #1a1c23; padding: 15px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
-    .promo-box { background-color: #ff007f; color: white; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; }
+    /* Fondo claro general */
+    .stApp { background-color: #f8f9fa; }
+    
+    /* Títulos y textos principales */
+    h1 { color: #1a1a1a !important; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+    h2 { color: #d81b60 !important; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 30px; font-weight: 800; }
+    h3 { color: #333333 !important; font-weight: 700 !important; }
+    p, .stMarkdown p { color: #555555 !important; }
+    
+    /* Precios resaltados (Rosa profundo) */
+    .precio-highlight { color: #d81b60 !important; font-size: 1.4rem; font-weight: 900; margin-bottom: 5px; }
+    
+    /* Tarjetas de producto (estilo "Card" limpio y blanco) */
+    [data-testid="column"] { 
+        background-color: #ffffff; 
+        padding: 15px; 
+        border-radius: 12px; 
+        border: 1px solid #eaeaea; 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+        margin-bottom: 15px;
+    }
+    
+    /* Caja de promociones */
+    .promo-box { background-color: #d81b60; color: white !important; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2); }
+    .promo-box p { color: white !important; }
+    
+    /* Ajuste de Pestañas (Tabs) para que contrasten */
+    .stTabs [data-baseweb="tab-list"] button { color: #777 !important; }
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { color: #d81b60 !important; font-weight: bold; border-bottom-color: #d81b60 !important; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
-st.markdown("<p style='text-align: center; color: #aaaaaa;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #777777;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN INTELIGENTE PARA MOSTRAR PRODUCTOS ---
-DEFAULT_IMG = "https://via.placeholder.com/500x500/1a1c23/ffffff?text=Foto+Proximamente"
+# Placeholder adaptado al nuevo fondo claro
+DEFAULT_IMG = "https://via.placeholder.com/500x500/f4f4f4/888888?text=Foto+Proximamente"
 
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
