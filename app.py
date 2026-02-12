@@ -31,10 +31,18 @@ st.markdown("""
         border: 1px solid #eaeaea; 
         box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
         margin-bottom: 15px;
-        text-align: center; /* Centra el texto en la tarjeta */
         display: flex; 
         flex-direction: column; 
-        align-items: center; /* Centra las imágenes horizontalmente */
+        align-items: center; 
+        justify-content: center;
+    }
+
+    /* Centrar imágenes de Streamlit */
+    [data-testid="stImage"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
     }
     
     /* Caja de promociones */
@@ -52,8 +60,8 @@ st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN INTELIGENTE PARA MOSTRAR PRODUCTOS ---
-# Placeholder adaptado al nuevo fondo claro
-DEFAULT_IMG = "https://via.placeholder.com/500x500/f4f4f4/888888?text=Foto+Proximamente"
+# Placeholder adaptado al nuevo fondo claro (URL más confiable)
+DEFAULT_IMG = "https://placehold.co/500x500/f4f4f4/888888?text=Foto+Proximamente"
 
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
@@ -66,10 +74,17 @@ def mostrar_productos(lista_productos):
             img_mostrar = ruta_img if os.path.exists(ruta_img) else DEFAULT_IMG
             
             st.image(img_mostrar, use_container_width=True)
-            st.subheader(prod["nombre"])
-            st.markdown(f"<p class='precio-highlight'>{prod['precio']}</p>", unsafe_allow_html=True)
-            if prod.get("desc"):
-                st.markdown(f"<p style='color: #777; font-size: 1.1rem; text-align: center;'>{prod['desc']}</p>", unsafe_allow_html=True)
+            
+            desc_html = f"<p style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 5px;'>{prod['desc']}</p>" if prod.get("desc") else ""
+            
+            # Todo el texto agrupado y forzado al centro perfecto
+            st.markdown(f"""
+                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;">
+                    <h3 style="color: #333333; font-weight: 700; font-size: 1.6rem; margin-bottom: 0px; margin-top: 10px;">{prod['nombre']}</h3>
+                    <p class='precio-highlight' style="margin-top: 5px; margin-bottom: 5px;">{prod['precio']}</p>
+                    {desc_html}
+                </div>
+            """, unsafe_allow_html=True)
                 
         # Producto Columna 2
         if i + 1 < len(lista_productos):
@@ -79,10 +94,17 @@ def mostrar_productos(lista_productos):
                 img_mostrar2 = ruta_img2 if os.path.exists(ruta_img2) else DEFAULT_IMG
                 
                 st.image(img_mostrar2, use_container_width=True)
-                st.subheader(prod2["nombre"])
-                st.markdown(f"<p class='precio-highlight'>{prod2['precio']}</p>", unsafe_allow_html=True)
-                if prod2.get("desc"):
-                    st.markdown(f"<p style='color: #777; font-size: 1.1rem; text-align: center;'>{prod2['desc']}</p>", unsafe_allow_html=True)
+                
+                desc_html2 = f"<p style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 5px;'>{prod2['desc']}</p>" if prod2.get("desc") else ""
+                
+                # Todo el texto agrupado y forzado al centro perfecto
+                st.markdown(f"""
+                    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;">
+                        <h3 style="color: #333333; font-weight: 700; font-size: 1.6rem; margin-bottom: 0px; margin-top: 10px;">{prod2['nombre']}</h3>
+                        <p class='precio-highlight' style="margin-top: 5px; margin-bottom: 5px;">{prod2['precio']}</p>
+                        {desc_html2}
+                    </div>
+                """, unsafe_allow_html=True)
         st.write("---")
 
 # ==========================================
