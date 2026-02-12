@@ -14,38 +14,42 @@ st.markdown("""
     /* Fondo claro general */
     .stApp { background-color: #f8f9fa; }
     
-    /* Títulos y textos principales */
-    h1 { color: #1a1a1a !important; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
-    h2 { color: #d81b60 !important; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 30px; font-weight: 800; }
-    h3 { color: #333333 !important; font-weight: 700 !important; }
-    p, .stMarkdown p { color: #555555 !important; }
+    /* Títulos y textos principales - MÁS GRANDES Y CENTRADOS */
+    h1 { color: #1a1a1a !important; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 2.8rem !important; }
+    h2 { color: #d81b60 !important; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 30px; font-weight: 800; text-align: center; font-size: 2.2rem !important; }
+    h3 { color: #333333 !important; font-weight: 700 !important; text-align: center; font-size: 1.6rem !important; }
+    p, .stMarkdown p { color: #555555 !important; text-align: center; font-size: 1.2rem !important; }
     
-    /* Precios resaltados (Rosa profundo) */
-    .precio-highlight { color: #d81b60 !important; font-size: 1.4rem; font-weight: 900; margin-bottom: 5px; }
+    /* Precios resaltados (Rosa profundo) - MÁS GRANDES Y CENTRADOS */
+    .precio-highlight { color: #d81b60 !important; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; text-align: center; }
     
     /* Tarjetas de producto (estilo "Card" limpio y blanco) */
     [data-testid="column"] { 
         background-color: #ffffff; 
-        padding: 15px; 
+        padding: 20px; 
         border-radius: 12px; 
         border: 1px solid #eaeaea; 
         box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
         margin-bottom: 15px;
+        text-align: center; /* Centra el texto en la tarjeta */
+        display: flex; 
+        flex-direction: column; 
+        align-items: center; /* Centra las imágenes horizontalmente */
     }
     
     /* Caja de promociones */
-    .promo-box { background-color: #d81b60; color: white !important; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2); }
-    .promo-box p { color: white !important; }
+    .promo-box { background-color: #d81b60; color: white !important; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2); font-size: 1.2rem; }
+    .promo-box p { color: white !important; text-align: center; }
     
-    /* Ajuste de Pestañas (Tabs) para que contrasten */
-    .stTabs [data-baseweb="tab-list"] button { color: #777 !important; }
+    /* Ajuste de Pestañas (Tabs) */
+    .stTabs [data-baseweb="tab-list"] button { color: #777 !important; font-size: 1.2rem !important; }
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { color: #d81b60 !important; font-weight: bold; border-bottom-color: #d81b60 !important; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
-st.markdown("<p style='text-align: center; color: #777777;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN INTELIGENTE PARA MOSTRAR PRODUCTOS ---
 # Placeholder adaptado al nuevo fondo claro
@@ -65,7 +69,7 @@ def mostrar_productos(lista_productos):
             st.subheader(prod["nombre"])
             st.markdown(f"<p class='precio-highlight'>{prod['precio']}</p>", unsafe_allow_html=True)
             if prod.get("desc"):
-                st.caption(prod["desc"])
+                st.markdown(f"<p style='color: #777; font-size: 1.1rem; text-align: center;'>{prod['desc']}</p>", unsafe_allow_html=True)
                 
         # Producto Columna 2
         if i + 1 < len(lista_productos):
@@ -78,7 +82,7 @@ def mostrar_productos(lista_productos):
                 st.subheader(prod2["nombre"])
                 st.markdown(f"<p class='precio-highlight'>{prod2['precio']}</p>", unsafe_allow_html=True)
                 if prod2.get("desc"):
-                    st.caption(prod2["desc"])
+                    st.markdown(f"<p style='color: #777; font-size: 1.1rem; text-align: center;'>{prod2['desc']}</p>", unsafe_allow_html=True)
         st.write("---")
 
 # ==========================================
