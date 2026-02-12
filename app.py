@@ -3,55 +3,31 @@ import os
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
-    page_title="Chingon Cocteles | Menú",
-    page_icon="🍹",
-    layout="centered" # Ideal para visualización en celulares
+    page_title="Chingon Cocteles | Menú Digital",
+    page_icon="💀",
+    layout="centered"
 )
 
 # --- ESTILOS CSS PERSONALIZADOS ---
-# Esto le da un toque moderno, oscuro y con estilo neon/mexicano
 st.markdown("""
     <style>
-    /* Estilo general del fondo y texto */
-    .stApp {
-        background-color: #0e1117;
-        color: #ffffff;
-    }
-    /* Títulos principales */
-    h1 {
-        color: #00ffcc;
-        text-align: center;
-        font-family: 'Arial Black', sans-serif;
-        text-transform: uppercase;
-    }
-    /* Precios resaltados */
-    .precio-highlight {
-        color: #ff007f;
-        font-size: 1.3rem;
-        font-weight: 900;
-        margin-bottom: 5px;
-    }
-    /* Tarjetas de producto */
-    div[data-testid="stVerticalBlock"] div[data-testid="stVerticalBlock"] {
-        background-color: #1a1c23;
-        padding: 15px;
-        border-radius: 15px;
-        border: 1px solid #333;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-    }
+    .stApp { background-color: #0e1117; color: #ffffff; }
+    h1 { color: #00ffcc; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; }
+    h2 { color: #ff007f; border-bottom: 2px solid #333; padding-bottom: 10px; margin-top: 30px; }
+    .precio-highlight { color: #00ffcc; font-size: 1.4rem; font-weight: 900; margin-bottom: 5px; }
+    .st-emotion-cache-1v0mbdj { background-color: #1a1c23; padding: 15px; border-radius: 15px; border: 1px solid #333; box-shadow: 0 4px 8px rgba(0,0,0,0.5); }
+    .promo-box { background-color: #ff007f; color: white; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
-st.markdown("<p style='text-align: center; color: #aaaaaa;'>Selecciona una categoría para ver nuestros productos</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #aaaaaa;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN INTELIGENTE PARA MOSTRAR PRODUCTOS ---
-# Si la foto no existe en la carpeta, pone una imagen por defecto
 DEFAULT_IMG = "https://via.placeholder.com/500x500/1a1c23/ffffff?text=Foto+Proximamente"
 
 def mostrar_productos(lista_productos):
-    # Mostrar productos en 2 columnas
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
         
@@ -67,7 +43,7 @@ def mostrar_productos(lista_productos):
             if prod.get("desc"):
                 st.caption(prod["desc"])
                 
-        # Producto Columna 2 (si existe)
+        # Producto Columna 2
         if i + 1 < len(lista_productos):
             with cols[1]:
                 prod2 = lista_productos[i+1]
@@ -81,9 +57,11 @@ def mostrar_productos(lista_productos):
                     st.caption(prod2["desc"])
         st.write("---")
 
-# --- BASE DE DATOS DEL MENÚ ---
-# Aquí puedes editar textos y precios fácilmente
-granizados = [
+# ==========================================
+# BASE DE DATOS COMPLETA (Extraída del PDF)
+# ==========================================
+
+granizados_tradicionales = [
     {"id": "sinaloa", "nombre": "Sinaloa", "precio": "$16.000", "desc": "Smirnoff de lulo con apariencia color verde selva."},
     {"id": "chido", "nombre": "Chido", "precio": "$16.000", "desc": "Cachaza, maracuyá y mango maduro. Color amarillo."},
     {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko limón, lima, naranja, frambuesa. Color azul."},
@@ -94,77 +72,154 @@ granizados = [
     {"id": "tequilazo", "nombre": "Tequilazo", "precio": "$16.000", "desc": "Tequila y mango maduro. Color naranja."},
     {"id": "que_pedo", "nombre": "Que Pedo?", "precio": "$16.000", "desc": "Vodka champagne y cereza. Color rojo."},
     {"id": "la_peda", "nombre": "La Peda", "precio": "$16.000", "desc": "Whisky y tequila. Color dorado."},
-    {"id": "dia_muertos", "nombre": "Dia de los Muertos", "precio": "$16.000", "desc": "Champagne, granadina, vodka, tequila y kola. Rojo."},
-    {"id": "carnal", "nombre": "Carnal", "precio": "$16.000", "desc": "Tequila y mango biche. Color verde."},
-    {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y fresa. Color rojo imperial."}
+    {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, granadina, vodka, tequila y kola. Rojo."},
+    {"id": "carnal", "nombre": "Carnal", "precio": "$16.000", "desc": "Tequila y mango viche. Color verde."},
+    {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y fresa. Color rojo imperial."},
+    {"id": "sin_alcohol", "nombre": "Granizado Sin Alcohol", "precio": "$16.000", "desc": "Preguntar disponibilidad."}
 ]
 
-micheladas = [
-    {"id": "mich_fresa", "nombre": "Michelada de Fresa", "precio": "$15.000", "desc": "Michelado con sal, fresas, zumo de limón y hielo."},
-    {"id": "mich_enchilada", "nombre": "Michelada Enchilada", "precio": "$19.000", "desc": "Mango biche, Tajín, Takis, zumo de limón y hielo."},
-    {"id": "mich_mango", "nombre": "Michelada de Mango", "precio": "$15.000", "desc": "Michelado con sal, mango, zumo de limón y hielo."},
-    {"id": "mich_maracumango", "nombre": "Michelada Maracumango", "precio": "$15.000", "desc": "Mango biche, maracuyá, zumo de limón y hielo."},
+granizados_cremosos = [
+    {"id": "crema_pina", "nombre": "Crema de Piña", "precio": "$18.000", "desc": "Granizado cremoso."},
+    {"id": "crema_whisky", "nombre": "Crema de Whisky", "precio": "$18.000", "desc": "Granizado cremoso."},
+    {"id": "explosion_fresas", "nombre": "Explosión de Fresas", "precio": "$25.000", "desc": "Smirnoff con fresas y leche condensada."}
+]
+
+compartir_y_cocteles = [
+    {"id": "nevecon_peq", "nombre": "Nevecon de Chela (Pequeño)", "precio": "$45.000", "desc": "Para 3 a 4 Personas."},
+    {"id": "nevecon_gde", "nombre": "Nevecon de Chela (Grande)", "precio": "$70.000", "desc": "Para 7 a 8 Personas."},
+    {"id": "nevecon_chingon", "nombre": "Nevecon Chingon", "precio": "$60.000", "desc": "Especialidad de la casa."},
+    {"id": "nevecon_chingon_gde", "nombre": "Nevecon Chingon Grande", "precio": "$90.000", "desc": "Especialidad tamaño familiar."},
+    {"id": "puppy", "nombre": "Puppy", "precio": "$100.000", "desc": "Granizado con gomitas, perlas explosivas, bombombum y 2 JP."},
+    {"id": "pecera", "nombre": "La Pecera", "precio": "$50.000", "desc": "Granizado azul, fresas, gomitas y Cerveza Coronita (2 a 3 Personas)."},
+    {"id": "cuatazo", "nombre": "Cuatazo", "precio": "$50.000", "desc": "Tequila, limón, sirope cósmico, soda. Botella Exclusiva (2 Personas)."},
+    {"id": "margarita", "nombre": "Margarita", "precio": "$20.000", "desc": "Cóctel tradicional."},
+    {"id": "alitas", "nombre": "Combo Alitas", "precio": "$16.000", "desc": "5 Alitas + Porción de papas + Jugo Hit en caja."}
+]
+
+micheladas_milos = [
+    {"id": "mich_fresa", "nombre": "Michelada de Fresa", "precio": "$15.000", "desc": "Sal, fresas, zumo de limón y hielo."},
     {"id": "mich_sencilla", "nombre": "Michelada Sencilla", "precio": "$8.000", "desc": "Tradicional."},
+    {"id": "mich_enchilada", "nombre": "Michelada Enchilada", "precio": "$19.000", "desc": "Sal, pimienta, mango biche en tajín, Takis."},
+    {"id": "mich_luli", "nombre": "Michelada Luli Chela", "precio": "$16.000", "desc": "Lulo, sirope de lulo, limón y choclitos."},
+    {"id": "mich_mango", "nombre": "Michelada de Mango", "precio": "$15.000", "desc": "Sal, mango, zumo de limón y hielo."},
+    {"id": "mich_maracumango", "nombre": "Michelada Maracumango", "precio": "$15.000", "desc": "Mango biche, maracuyá, limón y hielo."},
+    {"id": "mich_cereza", "nombre": "Michelada de Cereza", "precio": "$15.000", "desc": "Cereza, limón y hielo."},
+    {"id": "mich_maracuya", "nombre": "Michelada de Maracuyá", "precio": "$15.000", "desc": "Maracuyá, limón y hielo."},
     {"id": "milo_oreo", "nombre": "Milo Oreo", "precio": "$13.000", "desc": "Crema de chocolate, chantilly y galletas Oreo."},
     {"id": "milo_ramo", "nombre": "Milo Ramito", "precio": "$13.000", "desc": "Crema de chocolate, chantilly y Chocoramo."}
-]
-
-compartir = [
-    {"id": "nevecon_peq", "nombre": "Nevecon de Chela (Pequeño)", "precio": "$45.000", "desc": "Ideal para 3 a 4 personas."},
-    {"id": "nevecon_gde", "nombre": "Nevecon de Chela (Grande)", "precio": "$70.000", "desc": "Ideal para 7 a 8 personas."},
-    {"id": "nevecon_chingon", "nombre": "Nevecon Chingon", "precio": "$60.000", "desc": "La especialidad de la casa."},
-    {"id": "puppy", "nombre": "Puppy", "precio": "$100.000", "desc": "Granizado con gomitas, perlas explosivas y 2 JP."},
-    {"id": "pecera", "nombre": "La Pecera", "precio": "$50.000", "desc": "Granizado azul, fresas, naranja, gomitas y cerveza Coronita. (2-3 Personas)"},
-    {"id": "cuatazo", "nombre": "Cuatazo", "precio": "$50.000", "desc": "Tequila, limón, sirope cósmico, soda. Botella exclusiva (2 Personas)."},
-    {"id": "alitas", "nombre": "Combo Alitas", "precio": "$16.000", "desc": "5 Alitas + Porción de papas + Jugo Hit."}
 ]
 
 ramen = [
     {"id": "ramen_b_negro", "nombre": "Buldack Bolsa Negro", "precio": "$25.000", "desc": "Incluye bowl y palitos chinos."},
     {"id": "ramen_b_carbonara", "nombre": "Buldack Carbonara", "precio": "$27.000", "desc": "Incluye bowl y palitos chinos."},
     {"id": "ramen_b_rojo", "nombre": "Buldack Bolsa Rojo", "precio": "$26.000", "desc": "Incluye bowl y palitos chinos."},
-    {"id": "ramen_chapa", "nombre": "Chapaguetti", "precio": "$25.000", "desc": "Incluye bowl y palitos chinos."},
+    {"id": "ramen_chapa", "nombre": "Chapaguetti Bolsa", "precio": "$25.000", "desc": "Incluye bowl y palitos chinos."},
     {"id": "ramen_hello", "nombre": "Ramen Hello Kitty", "precio": "$28.000", "desc": "Incluye palitos chinos."},
-    {"id": "ramen_maruchan", "nombre": "Ramen Maruchan", "precio": "$12.000", "desc": "Incluye palitos chinos."}
+    {"id": "ramen_maruchan", "nombre": "Ramen Maruchan", "precio": "$12.000", "desc": "Incluye palitos chinos."},
+    {"id": "ramen_nissi", "nombre": "Ramen Nissi", "precio": "$10.000", "desc": "Incluye bowl y palitos chinos."},
+    {"id": "ramen_ajinomen_tarro", "nombre": "Ramen Ajinomen Tarro", "precio": "$12.000", "desc": "Incluye palitos chinos."},
+    {"id": "ramen_ajinomen_bolsa", "nombre": "Ramen Ajinomen Bolsa", "precio": "$10.000", "desc": "Incluye bowl y palitos chinos."},
+    {"id": "ramen_kimchi", "nombre": "Ramen Kimchi", "precio": "$17.000", "desc": "Incluye palitos chinos."},
+    {"id": "ramen_nudels", "nombre": "Ramen Nudels", "precio": "$14.000", "desc": "Incluye palitos chinos."}
 ]
 
 importados = [
     {"id": "skittles", "nombre": "Skittles Sour", "precio": "$35.000", "desc": ""},
     {"id": "warheads", "nombre": "Warheads Lata", "precio": "$25.000", "desc": ""},
-    {"id": "starbucks_g", "nombre": "Starbucks Grande / Pink / Energy", "precio": "$40.000", "desc": "Bebida importada Starbucks."},
-    {"id": "monster", "nombre": "Monster Rosado / Java", "precio": "$40.000", "desc": "Energizante importado."},
-    {"id": "prime", "nombre": "Prime", "precio": "$35.000", "desc": "Bebida hidratante."}
+    {"id": "starbucks_g", "nombre": "Starbucks Grande", "precio": "$40.000", "desc": ""},
+    {"id": "starbucks_pink", "nombre": "Starbucks Pink", "precio": "$40.000", "desc": ""},
+    {"id": "starbucks_energy", "nombre": "Starbucks Energy", "precio": "$40.000", "desc": ""},
+    {"id": "starbucks_p", "nombre": "Star Bucks Pequeño", "precio": "$25.000", "desc": ""},
+    {"id": "dunkin", "nombre": "Dunkin", "precio": "$35.000", "desc": ""},
+    {"id": "pacman", "nombre": "Pacman Lata", "precio": "$35.000", "desc": ""},
+    {"id": "monster_rosado", "nombre": "Monster Rosado", "precio": "$40.000", "desc": ""},
+    {"id": "monster_java", "nombre": "Monster Java", "precio": "$40.000", "desc": ""},
+    {"id": "prime", "nombre": "Prime", "precio": "$35.000", "desc": ""},
+    {"id": "rockstar", "nombre": "Rockstar", "precio": "$35.000", "desc": ""},
+    {"id": "mtn_dew", "nombre": "Mtn Dew", "precio": "$24.000", "desc": ""},
+    {"id": "coffi", "nombre": "Coffi Lata", "precio": "$12.000", "desc": ""}
 ]
 
+otras_bebidas_licores = [
+    {"id": "coronita", "nombre": "Coronita", "precio": "$6.000", "desc": ""},
+    {"id": "aguila", "nombre": "Aguila", "precio": "$6.000", "desc": ""},
+    {"id": "corona", "nombre": "Corona", "precio": "$12.000", "desc": ""},
+    {"id": "gatorade", "nombre": "Gatorade", "precio": "$6.000", "desc": ""},
+    {"id": "electrolit", "nombre": "Electrolit", "precio": "$12.000", "desc": ""},
+    {"id": "postobon", "nombre": "Gaseosa Postobon", "precio": "$5.000", "desc": ""},
+    {"id": "cocacola", "nombre": "Coca-Cola", "precio": "$6.000", "desc": ""},
+    {"id": "agua", "nombre": "Agua", "precio": "$4.000", "desc": ""},
+    {"id": "sodas", "nombre": "Sodas", "precio": "$4.000", "desc": ""},
+    {"id": "soda_italiana", "nombre": "Soda Italiana", "precio": "$14.000", "desc": ""},
+    {"id": "smirnoff_botella", "nombre": "Smirnoff", "precio": "$16.000", "desc": ""},
+    {"id": "four_loko", "nombre": "Four Loko", "precio": "$24.000", "desc": ""},
+    {"id": "jp", "nombre": "JP", "precio": "$16.000", "desc": ""},
+    {"id": "monster_tradicional", "nombre": "Monster Tradicional", "precio": "$14.000", "desc": ""},
+    {"id": "speed_max", "nombre": "Speed Max", "precio": "$5.000", "desc": ""},
+    {"id": "caneca_aguardiente", "nombre": "Caneca Aguardiente", "precio": "$40.000", "desc": ""},
+    {"id": "botella_aguardiente", "nombre": "Botella Aguardiente", "precio": "$70.000", "desc": ""},
+    {"id": "shot_chivas", "nombre": "Shot Chivas", "precio": "$24.000", "desc": ""},
+    {"id": "shot_vodka", "nombre": "Shot Vodka", "precio": "$16.000", "desc": ""},
+    {"id": "shot_jager", "nombre": "Shot Jägermeister", "precio": "$18.000", "desc": ""}
+]
+
+dulceria_extras = [
+    {"id": "gomas_s", "nombre": "Gomas Enchiladas Tamaño S", "precio": "$10.000", "desc": ""},
+    {"id": "gomas_m", "nombre": "Gomas Enchiladas Tamaño M", "precio": "$15.000", "desc": ""},
+    {"id": "gomas_l", "nombre": "Gomas Enchiladas Tamaño L", "precio": "$19.000", "desc": ""},
+    {"id": "jeringa_peq", "nombre": "Jeringas de Veneno Pequeña", "precio": "$3.000", "desc": ""},
+    {"id": "jeringa_gde", "nombre": "Jeringas de Veneno Grande", "precio": "$5.000", "desc": ""},
+]
+
+
 # --- NAVEGACIÓN POR PESTAÑAS (TABS) ---
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tabs = st.tabs([
     "🍹 Granizados", 
     "🌶️ Micheladas", 
-    "🍻 Pa' Compartir", 
+    "🍻 Compartir", 
     "🍜 Ramen", 
-    "🇺🇸 Importados"
+    "🇺🇸 Importados",
+    "🍺 Bebidas",
+    "🎉 Promos"
 ])
 
-with tab1:
-    st.header("Granizados y Cócteles")
-    st.info("Opciones de Tamaño: 14Oz ($16k) | 16Oz ($21k) | 24Oz ($26k)")
-    mostrar_productos(granizados)
+with tabs[0]:
+    st.markdown("<div class='promo-box'>Tamaños: 14 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
+    st.header("Granizados Tradicionales")
+    mostrar_productos(granizados_tradicionales)
+    
+    st.header("Granizados Cremosos y Dulces")
+    mostrar_productos(granizados_cremosos)
 
-with tab2:
-    st.header("Micheladas y Bebidas Dulces")
-    mostrar_productos(micheladas)
+with tabs[1]:
+    st.header("Micheladas y Milos")
+    mostrar_productos(micheladas_milos)
 
-with tab3:
-    st.header("Para Compartir y Picar")
-    mostrar_productos(compartir)
+with tabs[2]:
+    st.header("Pa' Compartir y Picar")
+    mostrar_productos(compartir_y_cocteles)
 
-with tab4:
+with tabs[3]:
     st.header("Menú de Ramen Oriental")
     mostrar_productos(ramen)
 
-with tab5:
-    st.header("Dulces y Bebidas Importadas")
+with tabs[4]:
+    st.header("Bebidas Importadas")
     mostrar_productos(importados)
+
+with tabs[5]:
+    st.header("Otras Bebidas y Licores")
+    mostrar_productos(otras_bebidas_licores)
+    
+    st.header("Dulcería y Extras")
+    mostrar_productos(dulceria_extras)
+
+with tabs[6]:
+    st.header("Experiencias y Promociones")
+    st.success("🎨 **¡SOMOS ARTE!** Podrás también pintar mientras disfrutas de un granizado. Pintura en cerámica + Pincel + Vinilo.")
+    st.info("🔥 **LUNES DE AMIGOS:** ¡Compra 2 granizados y llevas el 3ro GRATIS!")
+    st.warning("💉 **MARTES DE VENENO:** ¡Jeringa GRATIS para todos los granizados!")
+    st.error("🛍️ ¡Contamos con Dulcería Mexicana y Oriental! Ya disponibles TERMOS.")
 
 # --- PIE DE PÁGINA ---
 st.markdown("<br><br>", unsafe_allow_html=True)
@@ -173,6 +228,6 @@ st.markdown("""
 <div style='text-align: center; color: #888;'>
     <h4>¡Síguenos en nuestras redes!</h4>
     <p>Instagram: <b>@chingon.ccteles</b></p>
-    <p style='font-size: 10px;'>Desarrollado con 💻 por Joseph Sánchez</p>
+    <p style='font-size: 10px;'>Desarrollo Web y Menú QR por Joseph Sánchez</p>
 </div>
 """, unsafe_allow_html=True)
