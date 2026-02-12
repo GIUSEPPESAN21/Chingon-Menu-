@@ -270,9 +270,13 @@ with tabs[6]:
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.divider()
 st.markdown("""
-<div style='text-align: center; color: #888;'>
+<div style='text-align: center; color: #555555;'>
     <h4>¡Síguenos en nuestras redes!</h4>
-    <p>Instagram: <b>@chingon.ccteles</b></p>
-    <p style='font-size: 10px;'>Desarrollo Web y Menú QR por Joseph Sánchez</p>
+    <p style='font-size: 1.2rem;'>Instagram: <b>@chingon.ccteles</b></p>
+    <br>
+    <p style='margin-bottom: 2px; font-size: 1rem;'><b>Desarrollado por:</b></p>
+    <p style='margin-bottom: 2px; font-size: 1rem;'>Joseph Javier Sánchez Acuña</p>
+    <p style='margin-bottom: 15px; font-size: 0.85rem; color: #888888;'>CEO - SAVA SOFTWARE FOR ENGINEERING</p>
+    <p style='font-size: 1.1rem; font-weight: 800; color: #333333;'>© 2026 Chingon Cocteles. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
