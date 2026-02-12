@@ -31,12 +31,18 @@ st.markdown("""
         border: 1px solid #eaeaea; 
         box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
         margin-bottom: 15px;
-        display: flex; 
-        flex-direction: column; 
-        align-items: center; 
-        justify-content: center;
     }
 
+    /* Forzar centrado absoluto en todos los elementos de la tarjeta */
+    [data-testid="column"] [data-testid="stMarkdownContainer"] {
+        text-align: center !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+    
     /* Centrar imágenes de Streamlit */
     [data-testid="stImage"] {
         display: flex;
@@ -60,51 +66,40 @@ st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN INTELIGENTE PARA MOSTRAR PRODUCTOS ---
-# Placeholder adaptado al nuevo fondo claro (URL más confiable)
-DEFAULT_IMG = "https://placehold.co/500x500/f4f4f4/888888?text=Foto+Proximamente"
-
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
         
-        # Producto Columna 1
-        with cols[0]:
-            prod = lista_productos[i]
-            ruta_img = f"fotos/{prod['id']}.jpg"
-            img_mostrar = ruta_img if os.path.exists(ruta_img) else DEFAULT_IMG
-            
-            st.image(img_mostrar, use_container_width=True)
-            
-            desc_html = f"<p style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 5px;'>{prod['desc']}</p>" if prod.get("desc") else ""
-            
-            # Todo el texto agrupado y forzado al centro perfecto
-            st.markdown(f"""
-                <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;">
-                    <h3 style="color: #333333; font-weight: 700; font-size: 1.6rem; margin-bottom: 0px; margin-top: 10px;">{prod['nombre']}</h3>
-                    <p class='precio-highlight' style="margin-top: 5px; margin-bottom: 5px;">{prod['precio']}</p>
-                    {desc_html}
-                </div>
-            """, unsafe_allow_html=True)
-                
-        # Producto Columna 2
-        if i + 1 < len(lista_productos):
-            with cols[1]:
-                prod2 = lista_productos[i+1]
-                ruta_img2 = f"fotos/{prod2['id']}.jpg"
-                img_mostrar2 = ruta_img2 if os.path.exists(ruta_img2) else DEFAULT_IMG
-                
-                st.image(img_mostrar2, use_container_width=True)
-                
-                desc_html2 = f"<p style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 5px;'>{prod2['desc']}</p>" if prod2.get("desc") else ""
-                
-                # Todo el texto agrupado y forzado al centro perfecto
-                st.markdown(f"""
-                    <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%;">
-                        <h3 style="color: #333333; font-weight: 700; font-size: 1.6rem; margin-bottom: 0px; margin-top: 10px;">{prod2['nombre']}</h3>
-                        <p class='precio-highlight' style="margin-top: 5px; margin-bottom: 5px;">{prod2['precio']}</p>
-                        {desc_html2}
-                    </div>
-                """, unsafe_allow_html=True)
+        # Recorremos las dos columnas dinámicamente
+        for j in range(2):
+            if i + j < len(lista_productos):
+                with cols[j]:
+                    prod = lista_productos[i+j]
+                    ruta_img = f"fotos/{prod['id']}.jpg"
+                    
+                    # 1. Imagen o Placeholder (Hecho en HTML, no se rompe nunca)
+                    if os.path.exists(ruta_img):
+                        st.image(ruta_img, use_container_width=True)
+                    else:
+                        st.markdown("""
+                            <div style="background-color: #f4f4f4; border-radius: 8px; padding: 40px 10px; margin-bottom: 15px; text-align: center;">
+                                <div style="font-size: 2.5rem; margin-bottom: 5px;">📷</div>
+                                <div style="color: #999; font-size: 0.9rem; font-weight: bold;">Foto Próximamente</div>
+                            </div>
+                        """, unsafe_allow_html=True)
+                    
+                    # 2. Descripción opcional
+                    desc_html = f"<div style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    
+                    # 3. Textos agrupados y centrados (Usamos DIVs en lugar de H3 para evitar desvíos invisibles)
+                    st.markdown(f"""
+                        <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div style="color: #333333; font-weight: 800; font-size: 1.6rem; margin-bottom: 5px; text-align: center; width: 100%;">{prod['nombre']}</div>
+                            <div class='precio-highlight' style="margin-bottom: 5px; text-align: center; width: 100%;">{prod['precio']}</div>
+                            {desc_html}
+                        </div>
+                    """, unsafe_allow_html=True)
+                    
         st.write("---")
 
 # ==========================================
