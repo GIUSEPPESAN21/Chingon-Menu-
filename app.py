@@ -14,16 +14,14 @@ st.markdown("""
     /* Fondo claro general */
     .stApp { background-color: #f8f9fa; }
     
-    /* Títulos y textos principales - MÁS GRANDES Y CENTRADOS */
+    /* Títulos y textos principales */
     h1 { color: #1a1a1a !important; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 2.8rem !important; }
     h2 { color: #d81b60 !important; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 30px; font-weight: 800; text-align: center; font-size: 2.2rem !important; }
-    h3 { color: #333333 !important; font-weight: 700 !important; text-align: center; font-size: 1.6rem !important; }
-    p, .stMarkdown p { color: #555555 !important; text-align: center; font-size: 1.2rem !important; }
     
-    /* Precios resaltados (Rosa profundo) - MÁS GRANDES Y CENTRADOS */
+    /* Precios resaltados (Rosa profundo) */
     .precio-highlight { color: #d81b60 !important; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; text-align: center; }
     
-    /* Tarjetas de producto (estilo "Card" limpio y blanco) */
+    /* Tarjetas de producto */
     [data-testid="column"] { 
         background-color: #ffffff; 
         padding: 20px; 
@@ -33,7 +31,7 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    /* Forzar centrado absoluto en todos los elementos de la tarjeta */
+    /* Forzar centrado absoluto */
     [data-testid="column"] [data-testid="stMarkdownContainer"] {
         text-align: center !important;
         display: flex;
@@ -41,14 +39,6 @@ st.markdown("""
         align-items: center;
         justify-content: center;
         width: 100%;
-    }
-    
-    /* Centrar imágenes de Streamlit */
-    [data-testid="stImage"] {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 10px;
     }
     
     /* Caja de promociones */
@@ -65,20 +55,31 @@ st.markdown("""
 st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
-# --- FUNCIÓN INTELIGENTE PARA MOSTRAR PRODUCTOS ---
+# --- SISTEMA ULTRA INTELIGENTE DE FOTOS ---
+# Lee la carpeta 'fotos' y empareja los nombres ignorando mayúsculas, minúsculas o extensiones
+mapa_fotos = {}
+if os.path.exists("fotos"):
+    for archivo in os.listdir("fotos"):
+        # Extrae el nombre sin la extensión y lo pasa a minúscula (ej: "Cuatazo.JPEG" -> "cuatazo")
+        nombre_base = os.path.splitext(archivo)[0].lower()
+        mapa_fotos[nombre_base] = f"fotos/{archivo}"
+
+# --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
         
-        # Recorremos las dos columnas dinámicamente
         for j in range(2):
             if i + j < len(lista_productos):
                 with cols[j]:
                     prod = lista_productos[i+j]
-                    ruta_img = f"fotos/{prod['id']}.jpg"
+                    prod_id = prod['id'].lower()
                     
-                    # 1. Imagen o Placeholder (Hecho en HTML, no se rompe nunca)
-                    if os.path.exists(ruta_img):
+                    # Busca la foto en nuestro mapa inteligente (no importa la extensión o si hay mayúsculas)
+                    ruta_img = mapa_fotos.get(prod_id)
+                    
+                    # 1. Imagen o Placeholder
+                    if ruta_img:
                         st.image(ruta_img, use_container_width=True)
                     else:
                         st.markdown("""
@@ -91,7 +92,7 @@ def mostrar_productos(lista_productos):
                     # 2. Descripción opcional
                     desc_html = f"<div style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
                     
-                    # 3. Textos agrupados y centrados (Usamos DIVs en lugar de H3 para evitar desvíos invisibles)
+                    # 3. Textos agrupados y centrados
                     st.markdown(f"""
                         <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                             <div style="color: #333333; font-weight: 800; font-size: 1.6rem; margin-bottom: 5px; text-align: center; width: 100%;">{prod['nombre']}</div>
@@ -103,7 +104,7 @@ def mostrar_productos(lista_productos):
         st.write("---")
 
 # ==========================================
-# BASE DE DATOS COMPLETA (Extraída del PDF)
+# BASE DE DATOS COMPLETA 
 # ==========================================
 
 granizados_tradicionales = [
