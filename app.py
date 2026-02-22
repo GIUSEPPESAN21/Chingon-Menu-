@@ -48,6 +48,9 @@ st.markdown("""
     /* Ajuste de Pestañas (Tabs) */
     .stTabs [data-baseweb="tab-list"] button { color: #777 !important; font-size: 1.2rem !important; }
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { color: #d81b60 !important; font-weight: bold; border-bottom-color: #d81b60 !important; }
+    
+    /* Bordes redondeados para todas las imágenes */
+    [data-testid="stImage"] img { border-radius: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -55,14 +58,28 @@ st.markdown("""
 st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
-# --- SISTEMA ULTRA INTELIGENTE DE FOTOS ---
-# Lee la carpeta 'fotos' y empareja los nombres ignorando mayúsculas, minúsculas o extensiones
-mapa_fotos = {}
-if os.path.exists("fotos"):
-    for archivo in os.listdir("fotos"):
-        # Extrae el nombre sin la extensión y lo pasa a minúscula (ej: "Cuatazo.JPEG" -> "cuatazo")
-        nombre_base = os.path.splitext(archivo)[0].lower()
-        mapa_fotos[nombre_base] = f"fotos/{archivo}"
+# --- FUNCIÓN INTELIGENTE DE IMÁGENES "COOL" DE INTERNET ---
+def obtener_imagen_cool(nombre):
+    nombre_lower = nombre.lower()
+    
+    # Dependiendo de la palabra clave, devuelve una foto profesional diferente
+    if "ramen" in nombre_lower or "buldack" in nombre_lower or "chapaguetti" in nombre_lower:
+        return "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&h=600&fit=crop&q=80" # Ramen profesional
+    elif "michelada" in nombre_lower or "coronita" in nombre_lower or "cerveza" in nombre_lower or "aguila" in nombre_lower or "corona" in nombre_lower:
+        return "https://images.unsplash.com/photo-1625750346808-1f558a2d16be?w=600&h=600&fit=crop&q=80" # Cerveza servida
+    elif "milo" in nombre_lower or "crema" in nombre_lower or "starbucks" in nombre_lower or "dunkin" in nombre_lower:
+        return "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&h=600&fit=crop&q=80" # Bebida cremosa
+    elif "gomas" in nombre_lower or "skittles" in nombre_lower or "dulce" in nombre_lower or "warheads" in nombre_lower:
+        return "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=600&h=600&fit=crop&q=80" # Dulces/Gomas
+    elif "monster" in nombre_lower or "soda" in nombre_lower or "agua" in nombre_lower or "coca" in nombre_lower or "prime" in nombre_lower or "postobon" in nombre_lower:
+        return "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&h=600&fit=crop&q=80" # Latas/Bebidas frías
+    elif "alitas" in nombre_lower:
+        return "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&h=600&fit=crop&q=80" # Alitas BBQ
+    elif "shot" in nombre_lower or "botella" in nombre_lower or "caneca" in nombre_lower:
+        return "https://images.unsplash.com/photo-1516531737409-f6ba6df21a16?w=600&h=600&fit=crop&q=80" # Tragos/Shots
+    else:
+        return "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&h=600&fit=crop&q=80" # Cóctel servido "Cool" (Por defecto)
+
 
 # --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
 def mostrar_productos(lista_productos):
@@ -73,26 +90,28 @@ def mostrar_productos(lista_productos):
             if i + j < len(lista_productos):
                 with cols[j]:
                     prod = lista_productos[i+j]
-                    prod_id = prod['id'].lower()
+                    prod_id = prod['id']
                     
-                    # Busca la foto en nuestro mapa inteligente (no importa la extensión o si hay mayúsculas)
-                    ruta_img = mapa_fotos.get(prod_id)
+                    # 1. BÚSQUEDA DIRECTA (Un solo cambio seguro para leer todas las extensiones sin fallos)
+                    posibles_rutas = [
+                        f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
+                        f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.lower()}.jpg"
+                    ]
                     
-                    # 1. Imagen o Placeholder
-                    if ruta_img:
-                        st.image(ruta_img, use_container_width=True)
-                    else:
-                        st.markdown("""
-                            <div style="background-color: #f4f4f4; border-radius: 8px; padding: 40px 10px; margin-bottom: 15px; text-align: center;">
-                                <div style="font-size: 2.5rem; margin-bottom: 5px;">📷</div>
-                                <div style="color: #999; font-size: 0.9rem; font-weight: bold;">Foto Próximamente</div>
-                            </div>
-                        """, unsafe_allow_html=True)
+                    ruta_img = None
+                    for ruta in posibles_rutas:
+                        if os.path.exists(ruta):
+                            ruta_img = ruta
+                            break
                     
-                    # 2. Descripción opcional
-                    desc_html = f"<div style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    # 2. Asignar la imagen "Cool" si no encontraste foto local
+                    if not ruta_img:
+                        ruta_img = obtener_imagen_cool(prod['nombre'])
+
+                    st.image(ruta_img, use_container_width=True)
                     
                     # 3. Textos agrupados y centrados
+                    desc_html = f"<div style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
                     st.markdown(f"""
                         <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                             <div style="color: #333333; font-weight: 800; font-size: 1.6rem; margin-bottom: 5px; text-align: center; width: 100%;">{prod['nombre']}</div>
