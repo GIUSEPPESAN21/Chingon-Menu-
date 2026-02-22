@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import hashlib
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
@@ -59,26 +60,84 @@ st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN INTELIGENTE DE IMÁGENES "COOL" DE INTERNET ---
-def obtener_imagen_cool(nombre):
-    nombre_lower = nombre.lower()
+def obtener_imagen_cool(prod_id, nombre):
+    # 1. Mapeo exacto para productos clave (¡Imágenes que coinciden con la descripción real!)
+    exact_matches = {
+        "sinaloa": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80", # Cóctel Verde
+        "chido": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&q=80", # Cóctel Amarillo
+        "belico": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", # Cóctel Azul
+        "701": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", # Cóctel Fucsia/Rojo
+        "catrina": "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=600&q=80", # Cóctel Oscuro
+        "tequilazo": "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80", # Naranja/Mango
+        "alitas": "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&q=80", # Alitas BBQ reales
+        "margarita": "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80", # Margarita clásica
+        "cocacola": "https://images.unsplash.com/photo-1554866585-cd94860874b7?w=600&q=80", # Lata Coca-Cola
+        "agua": "https://images.unsplash.com/photo-1548839140-29a749e1bc4c?w=600&q=80", # Agua
+        "coronita": "https://images.unsplash.com/photo-1614316111861-c3b0dfb5e7d8?w=600&q=80", # Corona
+        "corona": "https://images.unsplash.com/photo-1614316111861-c3b0dfb5e7d8?w=600&q=80",
+        "monster_tradicional": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
+        "starbucks_g": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=600&q=80",
+        "mich_fresa": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Michelada fresa
+        "mich_mango": "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80",
+        "milo_oreo": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80",
+        "puppy": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", 
+        "pecera": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", 
+    }
+    if prod_id in exact_matches:
+        return exact_matches[prod_id]
+
+    # 2. Listas de imágenes variadas para evitar repeticiones en la misma categoría
+    ramenes = [
+        "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&q=80",
+        "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
+        "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=600&q=80",
+        "https://images.unsplash.com/photo-1614563637806-1d0e645e0940?w=600&q=80"
+    ]
+    cervezas = [
+        "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600&q=80",
+        "https://images.unsplash.com/photo-1625750346808-1f558a2d16be?w=600&q=80",
+        "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600&q=80"
+    ]
+    dulces = [
+        "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=600&q=80",
+        "https://images.unsplash.com/photo-1570831739435-6601aa3fa4fb?w=600&q=80",
+        "https://images.unsplash.com/photo-1499195333224-3ce974eecb47?w=600&q=80"
+    ]
+    cocteles = [
+        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80",
+        "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80",
+        "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80",
+        "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80",
+        "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80"
+    ]
+    shots_licores = [
+        "https://images.unsplash.com/photo-1516531737409-f6ba6df21a16?w=600&q=80",
+        "https://images.unsplash.com/photo-1560512823-829485b8bf24?w=600&q=80",
+        "https://images.unsplash.com/photo-1582222308731-89a31a78d06b?w=600&q=80"
+    ]
+    latas_sodas = [
+        "https://images.unsplash.com/photo-1629203851288-7ececa5f05c4?w=600&q=80",
+        "https://images.unsplash.com/photo-1603392813589-73f1a26ae678?w=600&q=80",
+        "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80"
+    ]
+
+    # Usamos un hash matemático del ID para elegir siempre la MISMA imagen para un producto, 
+    # pero distribuyendo equitativamente entre las opciones para que no se repitan unas con otras.
+    idx = int(hashlib.md5(prod_id.encode('utf-8')).hexdigest(), 16)
     
-    # Dependiendo de la palabra clave, devuelve una foto profesional diferente
+    nombre_lower = nombre.lower()
     if "ramen" in nombre_lower or "buldack" in nombre_lower or "chapaguetti" in nombre_lower:
-        return "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&h=600&fit=crop&q=80" # Ramen profesional
+        return ramenes[idx % len(ramenes)]
     elif "michelada" in nombre_lower or "coronita" in nombre_lower or "cerveza" in nombre_lower or "aguila" in nombre_lower or "corona" in nombre_lower:
-        return "https://images.unsplash.com/photo-1625750346808-1f558a2d16be?w=600&h=600&fit=crop&q=80" # Cerveza servida
-    elif "milo" in nombre_lower or "crema" in nombre_lower or "starbucks" in nombre_lower or "dunkin" in nombre_lower:
-        return "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&h=600&fit=crop&q=80" # Bebida cremosa
-    elif "gomas" in nombre_lower or "skittles" in nombre_lower or "dulce" in nombre_lower or "warheads" in nombre_lower:
-        return "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=600&h=600&fit=crop&q=80" # Dulces/Gomas
-    elif "monster" in nombre_lower or "soda" in nombre_lower or "agua" in nombre_lower or "coca" in nombre_lower or "prime" in nombre_lower or "postobon" in nombre_lower:
-        return "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&h=600&fit=crop&q=80" # Latas/Bebidas frías
-    elif "alitas" in nombre_lower:
-        return "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&h=600&fit=crop&q=80" # Alitas BBQ
-    elif "shot" in nombre_lower or "botella" in nombre_lower or "caneca" in nombre_lower:
-        return "https://images.unsplash.com/photo-1516531737409-f6ba6df21a16?w=600&h=600&fit=crop&q=80" # Tragos/Shots
+        return cervezas[idx % len(cervezas)]
+    elif "gomas" in nombre_lower or "skittles" in nombre_lower or "dulce" in nombre_lower or "warheads" in nombre_lower or "jeringa" in nombre_lower:
+        return dulces[idx % len(dulces)]
+    elif "shot" in nombre_lower or "botella" in nombre_lower or "caneca" in nombre_lower or "jp" in nombre_lower or "aguardiente" in nombre_lower:
+        return shots_licores[idx % len(shots_licores)]
+    elif "monster" in nombre_lower or "soda" in nombre_lower or "agua" in nombre_lower or "coca" in nombre_lower or "prime" in nombre_lower or "postobon" in nombre_lower or "gatorade" in nombre_lower:
+        return latas_sodas[idx % len(latas_sodas)]
     else:
-        return "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&h=600&fit=crop&q=80" # Cóctel servido "Cool" (Por defecto)
+        return cocteles[idx % len(cocteles)]
 
 
 # --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
@@ -92,10 +151,12 @@ def mostrar_productos(lista_productos):
                     prod = lista_productos[i+j]
                     prod_id = prod['id']
                     
-                    # 1. BÚSQUEDA DIRECTA (Un solo cambio seguro para leer todas las extensiones sin fallos)
+                    # 1. BÚSQUEDA EXHAUSTIVA DE IMÁGENES LOCALES (Soporta Cuatazo.jpeg, cuatazo.jpg, etc)
                     posibles_rutas = [
                         f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
-                        f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.lower()}.jpg"
+                        f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.lower()}.jpg",
+                        f"fotos/{prod_id.capitalize()}.jpeg", f"fotos/{prod_id.capitalize()}.jpg",
+                        f"fotos/{prod_id.upper()}.jpeg", f"fotos/{prod_id.upper()}.jpg",
                     ]
                     
                     ruta_img = None
@@ -106,7 +167,7 @@ def mostrar_productos(lista_productos):
                     
                     # 2. Asignar la imagen "Cool" si no encontraste foto local
                     if not ruta_img:
-                        ruta_img = obtener_imagen_cool(prod['nombre'])
+                        ruta_img = obtener_imagen_cool(prod_id, prod['nombre'])
 
                     st.image(ruta_img, use_container_width=True)
                     
