@@ -11,8 +11,20 @@ st.set_page_config(
 )
 
 # --- ESTILOS CSS PERSONALIZADOS (TEMA NEÓN OSCURO & MOBILE FIRST) ---
-# Se elimina la sangría al inicio para evitar conflictos con el renderizado Markdown
 st.markdown("""<style>
+/* --- OCULTAR INTERFAZ POR DEFECTO DE STREAMLIT --- */
+header {visibility: hidden !important; display: none !important;}
+[data-testid="stHeader"] {display: none !important;}
+#MainMenu {visibility: hidden !important; display: none !important;}
+footer {visibility: hidden !important; display: none !important;}
+.stApp > header {display: none !important;}
+
+/* Reducir el espacio en blanco superior que deja el header oculto */
+.block-container {
+    padding-top: 1.5rem !important; 
+    padding-bottom: 2rem !important;
+}
+
 /* Fondo oscuro para que resalte el Neón */
 .stApp { background-color: #0a0a0c; color: #ffffff; }
 
@@ -23,8 +35,9 @@ h1 {
     font-family: 'Arial Black', sans-serif; 
     text-transform: uppercase; 
     letter-spacing: 2px; 
-    font-size: 2.8rem !important; 
+    font-size: 2.6rem !important; 
     text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
+    margin-top: 0px;
     margin-bottom: 5px;
     line-height: 1.1;
 }
@@ -107,26 +120,28 @@ h2 {
 
 /* --- MEDIA QUERIES PARA CELULARES --- */
 @media (max-width: 768px) {
+    .block-container { padding-top: 1rem !important; }
     [data-testid="column"] {
         width: 100% !important;
         flex: 1 1 100% !important;
         max-width: 100% !important;
         margin-bottom: 20px;
     }
-    h1 { font-size: 2.2rem !important; letter-spacing: 1px; }
-    h2 { font-size: 1.6rem !important; margin-top: 25px; }
-    .promo-box { font-size: 1rem; padding: 10px; }
+    /* Título principal perfecto para celular (una línea) */
+    h1 { font-size: 1.65rem !important; letter-spacing: 1px; margin-top: 5px; }
+    h2 { font-size: 1.5rem !important; margin-top: 25px; }
+    .promo-box { font-size: 0.95rem; padding: 10px; }
     div[data-testid="stHorizontalBlock"] { flex-direction: column !important; }
 }
 
 @media (min-width: 769px) {
-    h1 { font-size: 3.4rem !important; }
-    h2 { font-size: 2.4rem !important; }
+    h1 { font-size: 3.2rem !important; }
+    h2 { font-size: 2.2rem !important; }
 }
 </style>""", unsafe_allow_html=True)
 
-# --- ENCABEZADO ---
-st.title("💀 CHINGON COCTELES 💀")
+# --- ENCABEZADO (Renderizado como HTML en lugar de st.title para evitar íconos) ---
+st.markdown("<h1>💀 CHINGON COCTELES 💀</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 15px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN PARA CONVERTIR IMAGEN A BASE64 ---
@@ -190,7 +205,6 @@ def mostrar_productos(lista_productos):
                     rec_badge = "<div style='margin-bottom: 10px;'><span style='background-color: #ff007f; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
                     desc_html = f"<div style='color: #aaaaaa; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.3; width: 100%; max-width: 90%; margin-left: auto; margin-right: auto;'>{desc}</div>" if desc else ""
                     
-                    # TODO el HTML pegado al inicio de la línea (sin indentación) para que Streamlit NO lo lea como código.
                     tarjeta_completa = f'<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 5px;">\n{img_html}\n{rec_badge}\n<div style="color: #ffffff; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>\n<div style="color: #00ffcc; font-size: 1.7rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>\n{desc_html}\n</div>'
                     
                     st.markdown(tarjeta_completa, unsafe_allow_html=True)
@@ -200,13 +214,10 @@ def mostrar_productos(lista_productos):
 # ==========================================
 
 granizados_tradicionales = [
-    # --- RECOMENDADOS Y PRIMEROS ---
     {"id": "catrina", "nombre": "Catrina", "precio": "$16.000", "desc": "Vodka y whisky sabor sandía y fresa. Color negro.", "recomendado": True},
     {"id": "701", "nombre": "701", "precio": "$16.000", "desc": "Fourloko sandía, whisky y tequila. Color fucsia.", "recomendado": True},
     {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko limón, lima, naranja, frambuesa. Color azul.", "recomendado": True},
     {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, granadina, vodka, tequila y kola. Rojo.", "recomendado": True},
-    
-    # --- DEMÁS SABORES ---
     {"id": "sinaloa", "nombre": "Sinaloa", "precio": "$16.000", "desc": "Smirnoff de lulo con apariencia color verde selva."},
     {"id": "chido", "nombre": "Chido", "precio": "$16.000", "desc": "Cachaza, maracuyá y mango maduro. Color amarillo."},
     {"id": "no_manches", "nombre": "No Manches", "precio": "$16.000", "desc": "Ginebra y manzana. Color azul."},
@@ -312,7 +323,6 @@ dulceria_extras = [
     {"id": "jeringa_gde", "nombre": "Jeringas de Veneno Grande", "precio": "$5.000", "desc": ""},
 ]
 
-
 # --- NAVEGACIÓN POR PESTAÑAS (TABS) ---
 tabs = st.tabs([
     "🍹 Granizados", 
@@ -326,37 +336,37 @@ tabs = st.tabs([
 
 with tabs[0]:
     st.markdown("<div class='promo-box'>Tamaños: 14 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
-    st.header("Granizados Tradicionales")
+    st.markdown("<h2>Granizados Tradicionales</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_tradicionales)
     
-    st.header("Granizados Cremosos y Dulces")
+    st.markdown("<h2>Granizados Cremosos y Dulces</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_cremosos)
 
 with tabs[1]:
-    st.header("Micheladas y Milos")
+    st.markdown("<h2>Micheladas y Milos</h2>", unsafe_allow_html=True)
     mostrar_productos(micheladas_milos)
 
 with tabs[2]:
-    st.header("Pa' Compartir y Picar")
+    st.markdown("<h2>Pa' Compartir y Picar</h2>", unsafe_allow_html=True)
     mostrar_productos(compartir_y_cocteles)
 
 with tabs[3]:
-    st.header("Menú de Ramen Oriental")
+    st.markdown("<h2>Menú de Ramen Oriental</h2>", unsafe_allow_html=True)
     mostrar_productos(ramen)
 
 with tabs[4]:
-    st.header("Bebidas Importadas")
+    st.markdown("<h2>Bebidas Importadas</h2>", unsafe_allow_html=True)
     mostrar_productos(importados)
 
 with tabs[5]:
-    st.header("Otras Bebidas y Licores")
+    st.markdown("<h2>Otras Bebidas y Licores</h2>", unsafe_allow_html=True)
     mostrar_productos(otras_bebidas_licores)
     
-    st.header("Dulcería y Extras")
+    st.markdown("<h2>Dulcería y Extras</h2>", unsafe_allow_html=True)
     mostrar_productos(dulceria_extras)
 
 with tabs[6]:
-    st.header("Experiencias y Promociones")
+    st.markdown("<h2>Experiencias y Promociones</h2>", unsafe_allow_html=True)
     st.success("🎨 **¡SOMOS ARTE!** Podrás también pintar mientras disfrutas de un granizado. Pintura en cerámica + Pincel + Vinilo.")
     st.info("🔥 **LUNES DE AMIGOS:** ¡Compra 2 granizados y llevas el 3ro GRATIS!")
     st.warning("💉 **MARTES DE VENENO:** ¡Jeringa GRATIS para todos los granizados!")
