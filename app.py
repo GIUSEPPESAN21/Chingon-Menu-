@@ -319,8 +319,10 @@ dulceria_extras = [
     {"id": "gomas_s", "nombre": "Gomas Enchiladas Tamaño S", "precio": "$10.000", "desc": ""},
     {"id": "gomas_m", "nombre": "Gomas Enchiladas Tamaño M", "precio": "$15.000", "desc": ""},
     {"id": "gomas_l", "nombre": "Gomas Enchiladas Tamaño L", "precio": "$19.000", "desc": ""},
-    {"id": "jeringa", "nombre": "Jeringa de Veneno", "precio": "$3.000", "desc": ""},
-    {"id": "pocima_veneno", "nombre": "Pócima de Veneno", "precio": "$5.000", "desc": ""},
+    {"id": "jeringa_peq", "nombre": "Jeringa de Veneno Pequeña", "precio": "$3.000", "desc": ""},
+    {"id": "jeringa_gde", "nombre": "Jeringa de Veneno Grande", "precio": "$5.000", "desc": ""},
+    {"id": "pocima_peq", "nombre": "Pócima de Veneno Pequeña", "precio": "$3.000", "desc": ""},
+    {"id": "pocima_gde", "nombre": "Pócima de Veneno Grande", "precio": "$5.000", "desc": ""},
 ]
 
 # --- NAVEGACIÓN POR PESTAÑAS (TABS) ---
