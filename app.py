@@ -61,14 +61,24 @@ st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>D
 
 # --- FUNCIÓN INTELIGENTE DE IMÁGENES "COOL" DE INTERNET ---
 def obtener_imagen_cool(prod_id, nombre):
-    # 1. Mapeo exacto para productos clave (¡Imágenes que coinciden con la descripción real!)
+    # 1. Mapeo exacto para productos clave (¡Imágenes que coinciden con la descripción real y el COLOR!)
     exact_matches = {
+        # --- GRANIZADOS POR COLOR ---
         "sinaloa": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80", # Cóctel Verde
         "chido": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&q=80", # Cóctel Amarillo
         "belico": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", # Cóctel Azul
         "701": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", # Cóctel Fucsia/Rojo
-        "catrina": "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=600&q=80", # Cóctel Oscuro
-        "tequilazo": "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80", # Naranja/Mango
+        "catrina": "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=600&q=80", # Cóctel Oscuro/Negro
+        "no_manches": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", # Cóctel Azul
+        "que_onda": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", # Cóctel Fucsia
+        "tequilazo": "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80", # Cóctel Naranja
+        "que_pedo": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Cóctel Rojo
+        "la_peda": "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80", # Cóctel Dorado/Amarillo
+        "dia_muertos": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Cóctel Rojo
+        "carnal": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80", # Cóctel Verde
+        "chupeta": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Cóctel Rojo Imperial
+        
+        # --- OTROS PRODUCTOS ---
         "alitas": "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&q=80", # Alitas BBQ reales
         "margarita": "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80", # Margarita clásica
         "cocacola": "https://images.unsplash.com/photo-1554866585-cd94860874b7?w=600&q=80", # Lata Coca-Cola
@@ -151,7 +161,7 @@ def mostrar_productos(lista_productos):
                     prod = lista_productos[i+j]
                     prod_id = prod['id']
                     
-                    # 1. BÚSQUEDA EXHAUSTIVA DE IMÁGENES LOCALES (Soporta Cuatazo.jpeg, cuatazo.jpg, etc)
+                    # 1. BÚSQUEDA EXHAUSTIVA DE IMÁGENES LOCALES
                     posibles_rutas = [
                         f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
                         f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.lower()}.jpg",
@@ -310,7 +320,8 @@ tabs = st.tabs([
 ])
 
 with tabs[0]:
-    st.markdown("<div class='promo-box'>Tamaños: 14 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
+    # --- AQUÍ ESTÁ LA CORRECCIÓN DE TAMAÑOS ---
+    st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.header("Granizados Tradicionales")
     mostrar_productos(granizados_tradicionales)
     
