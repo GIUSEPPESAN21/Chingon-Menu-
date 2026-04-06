@@ -1,6 +1,5 @@
 import streamlit as st
 import os
-import base64
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
@@ -38,6 +37,15 @@ st.markdown("""
     /* Ajuste de Pestañas (Tabs) */
     .stTabs [data-baseweb="tab-list"] button { color: #777 !important; font-size: 1.2rem !important; }
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { color: #d81b60 !important; font-weight: bold; border-bottom-color: #d81b60 !important; }
+    
+    /* REGLA MAESTRA: Forzar que todas las imágenes nativas midan lo mismo sin deformarse */
+    [data-testid="stImage"] img {
+        width: 100% !important;
+        height: 280px !important;
+        object-fit: cover !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.08) !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -45,16 +53,7 @@ st.markdown("""
 st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
-# --- FUNCIÓN PARA CONVERTIR IMAGEN A BASE64 (Para forzar CSS del mismo tamaño) ---
-def get_image_base64(filepath):
-    try:
-        with open(filepath, "rb") as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except Exception as e:
-        return ""
-
-# --- FUNCIÓN PARA MOSTRAR PRODUCTOS (Con tamaño uniforme y Logo de Respaldo) ---
+# --- FUNCIÓN PARA MOSTRAR PRODUCTOS (Estable y sin Bugs de texto) ---
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
@@ -83,46 +82,32 @@ def mostrar_productos(lista_productos):
                             ruta_img = ruta
                             break
                     
-                    # 2. Renderizar Imagen con tamaño fijo (HTML/CSS object-fit)
+                    # 2. Renderizar Imagen usando Streamlit Nativo (El CSS Global le da el tamaño perfecto)
                     if ruta_img:
-                        b64_img = get_image_base64(ruta_img)
-                        img_html = f'''
-                            <img src="data:image/jpeg;base64,{b64_img}" 
-                                 style="width: 100%; height: 280px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); margin-bottom: 10px;">
-                        '''
+                        st.image(ruta_img, use_container_width=True)
                     else:
                         # LOGO CHINGON (Foto no disponible)
                         logo_path = "CHINGON COCTELES.jpg"
                         if os.path.exists(logo_path):
-                            b64_logo = get_image_base64(logo_path)
-                            # Usamos object-fit: contain y fondo oscuro para que el logo neón luzca perfecto
-                            img_html = f'''
-                                <img src="data:image/jpeg;base64,{b64_logo}" 
-                                     style="width: 100%; height: 280px; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 1px solid #222; margin-bottom: 10px;">
-                            '''
+                            st.image(logo_path, use_container_width=True)
                         else:
-                            # Respaldo en caso de que el archivo del logo no se encuentre
-                            img_html = f'''
+                            # Respaldo en caso de que ni el logo se encuentre
+                            st.markdown(f'''
                                 <div style="width: 100%; height: 280px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 2px dashed #444; margin-bottom: 10px;">
                                     <div style="font-size: 4rem;">💀</div>
                                     <div style="color: #d81b60; font-weight: 900; font-size: 1.4rem; margin-top: 5px; letter-spacing: 2px;">CHINGON</div>
                                     <div style="color: #888; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto no disponible</div>
                                 </div>
-                            '''
+                            ''', unsafe_allow_html=True)
 
-                    # 3. Insignia de Recomendado
-                    rec_badge = ""
-                    if prod.get("recomendado"):
-                        rec_badge = "<div style='margin-bottom: 8px;'><span style='background-color: #FFD700; color: #1a1a1a; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 2px 5px rgba(255,215,0,0.4);'>⭐ RECOMENDADOS</span></div>"
-                    
-                    # 4. Textos agrupados y centrados
-                    desc_html = f"<div style='color: #777; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    # 3. Textos agrupados y centrados (Separados de las imágenes)
+                    rec_badge = "<div style='margin-top: 10px; margin-bottom: 8px;'><span style='background-color: #FFD700; color: #1a1a1a; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 2px 5px rgba(255,215,0,0.4);'>⭐ RECOMENDADOS</span></div>" if prod.get("recomendado") else "<div style='margin-top: 10px;'></div>"
+                    desc_html = f"<div style='color: #777; font-size: 1.05rem; text-align: center; margin-top: 5px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
                     
                     st.markdown(f"""
-                        <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%;">
-                            {img_html}
+                        <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
                             {rec_badge}
-                            <div style="color: #222; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.1;">{nombre}</div>
+                            <div style="color: #222; font-weight: 900; font-size: 1.5rem; margin-bottom: 5px; line-height: 1.1;">{nombre}</div>
                             <div class='precio-highlight' style="margin-bottom: 5px;">{prod['precio']}</div>
                             {desc_html}
                         </div>
@@ -260,7 +245,7 @@ tabs = st.tabs([
 ])
 
 with tabs[0]:
-    st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='promo-box'>Tamaños: 14 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.header("Granizados Tradicionales")
     mostrar_productos(granizados_tradicionales)
     
