@@ -1,6 +1,6 @@
 import streamlit as st
 import os
-import hashlib
+import base64
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
@@ -32,26 +32,12 @@ st.markdown("""
         margin-bottom: 15px;
     }
 
-    /* Forzar centrado absoluto */
-    [data-testid="column"] [data-testid="stMarkdownContainer"] {
-        text-align: center !important;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-    }
-    
     /* Caja de promociones */
     .promo-box { background-color: #d81b60; color: white !important; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2); font-size: 1.2rem; }
-    .promo-box p { color: white !important; text-align: center; }
     
     /* Ajuste de Pestañas (Tabs) */
     .stTabs [data-baseweb="tab-list"] button { color: #777 !important; font-size: 1.2rem !important; }
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { color: #d81b60 !important; font-weight: bold; border-bottom-color: #d81b60 !important; }
-    
-    /* Bordes redondeados para todas las imágenes */
-    [data-testid="stImage"] img { border-radius: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -59,98 +45,16 @@ st.markdown("""
 st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
-# --- FUNCIÓN INTELIGENTE DE IMÁGENES "COOL" DE INTERNET ---
-def obtener_imagen_cool(prod_id, nombre):
-    # 1. Mapeo exacto para productos clave (¡Imágenes que coinciden con la descripción real y el COLOR!)
-    exact_matches = {
-        # --- GRANIZADOS POR COLOR ---
-        "sinaloa": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80", # Cóctel Verde
-        "chido": "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&q=80", # Cóctel Amarillo
-        "belico": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", # Cóctel Azul
-        "701": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", # Cóctel Fucsia/Rojo
-        "catrina": "https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=600&q=80", # Cóctel Oscuro/Negro
-        "no_manches": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", # Cóctel Azul
-        "que_onda": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", # Cóctel Fucsia
-        "tequilazo": "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80", # Cóctel Naranja
-        "que_pedo": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Cóctel Rojo
-        "la_peda": "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80", # Cóctel Dorado/Amarillo
-        "dia_muertos": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Cóctel Rojo
-        "carnal": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80", # Cóctel Verde
-        "chupeta": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Cóctel Rojo Imperial
-        
-        # --- OTROS PRODUCTOS ---
-        "alitas": "https://images.unsplash.com/photo-1608039829572-78524f79c4c7?w=600&q=80", # Alitas BBQ reales
-        "margarita": "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80", # Margarita clásica
-        "cocacola": "https://images.unsplash.com/photo-1554866585-cd94860874b7?w=600&q=80", # Lata Coca-Cola
-        "agua": "https://images.unsplash.com/photo-1548839140-29a749e1bc4c?w=600&q=80", # Agua
-        "coronita": "https://images.unsplash.com/photo-1614316111861-c3b0dfb5e7d8?w=600&q=80", # Corona
-        "corona": "https://images.unsplash.com/photo-1614316111861-c3b0dfb5e7d8?w=600&q=80",
-        "monster_tradicional": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80",
-        "starbucks_g": "https://images.unsplash.com/photo-1559525839-b184a4d698c7?w=600&q=80",
-        "mich_fresa": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80", # Michelada fresa
-        "mich_mango": "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80",
-        "milo_oreo": "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80",
-        "puppy": "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600&q=80", 
-        "pecera": "https://images.unsplash.com/photo-1544145945-f9042538a7f5?w=600&q=80", 
-    }
-    if prod_id in exact_matches:
-        return exact_matches[prod_id]
+# --- FUNCIÓN PARA CONVERTIR IMAGEN A BASE64 (Para forzar CSS del mismo tamaño) ---
+def get_image_base64(filepath):
+    try:
+        with open(filepath, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except Exception as e:
+        return ""
 
-    # 2. Listas de imágenes variadas para evitar repeticiones en la misma categoría
-    ramenes = [
-        "https://images.unsplash.com/photo-1557872943-16a5ac26437e?w=600&q=80",
-        "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&q=80",
-        "https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=600&q=80",
-        "https://images.unsplash.com/photo-1614563637806-1d0e645e0940?w=600&q=80"
-    ]
-    cervezas = [
-        "https://images.unsplash.com/photo-1567171466295-4afa63d45416?w=600&q=80",
-        "https://images.unsplash.com/photo-1625750346808-1f558a2d16be?w=600&q=80",
-        "https://images.unsplash.com/photo-1535958636474-b021ee887b13?w=600&q=80"
-    ]
-    dulces = [
-        "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?w=600&q=80",
-        "https://images.unsplash.com/photo-1570831739435-6601aa3fa4fb?w=600&q=80",
-        "https://images.unsplash.com/photo-1499195333224-3ce974eecb47?w=600&q=80"
-    ]
-    cocteles = [
-        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600&q=80",
-        "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=600&q=80",
-        "https://images.unsplash.com/photo-1546171753-97d7676e4602?w=600&q=80",
-        "https://images.unsplash.com/photo-1587223075055-82e9a937ddff?w=600&q=80",
-        "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80"
-    ]
-    shots_licores = [
-        "https://images.unsplash.com/photo-1516531737409-f6ba6df21a16?w=600&q=80",
-        "https://images.unsplash.com/photo-1560512823-829485b8bf24?w=600&q=80",
-        "https://images.unsplash.com/photo-1582222308731-89a31a78d06b?w=600&q=80"
-    ]
-    latas_sodas = [
-        "https://images.unsplash.com/photo-1629203851288-7ececa5f05c4?w=600&q=80",
-        "https://images.unsplash.com/photo-1603392813589-73f1a26ae678?w=600&q=80",
-        "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&q=80"
-    ]
-
-    # Usamos un hash matemático del ID para elegir siempre la MISMA imagen para un producto, 
-    # pero distribuyendo equitativamente entre las opciones para que no se repitan unas con otras.
-    idx = int(hashlib.md5(prod_id.encode('utf-8')).hexdigest(), 16)
-    
-    nombre_lower = nombre.lower()
-    if "ramen" in nombre_lower or "buldack" in nombre_lower or "chapaguetti" in nombre_lower:
-        return ramenes[idx % len(ramenes)]
-    elif "michelada" in nombre_lower or "coronita" in nombre_lower or "cerveza" in nombre_lower or "aguila" in nombre_lower or "corona" in nombre_lower:
-        return cervezas[idx % len(cervezas)]
-    elif "gomas" in nombre_lower or "skittles" in nombre_lower or "dulce" in nombre_lower or "warheads" in nombre_lower or "jeringa" in nombre_lower:
-        return dulces[idx % len(dulces)]
-    elif "shot" in nombre_lower or "botella" in nombre_lower or "caneca" in nombre_lower or "jp" in nombre_lower or "aguardiente" in nombre_lower:
-        return shots_licores[idx % len(shots_licores)]
-    elif "monster" in nombre_lower or "soda" in nombre_lower or "agua" in nombre_lower or "coca" in nombre_lower or "prime" in nombre_lower or "postobon" in nombre_lower or "gatorade" in nombre_lower:
-        return latas_sodas[idx % len(latas_sodas)]
-    else:
-        return cocteles[idx % len(cocteles)]
-
-
-# --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
+# --- FUNCIÓN PARA MOSTRAR PRODUCTOS (Con tamaño uniforme y Logo de Respaldo) ---
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
@@ -160,13 +64,17 @@ def mostrar_productos(lista_productos):
                 with cols[j]:
                     prod = lista_productos[i+j]
                     prod_id = prod['id']
+                    nombre = prod['nombre']
+                    
+                    # Limpiamos el nombre de caracteres especiales para la búsqueda
+                    nombre_limpio = nombre.replace("?", "")
                     
                     # 1. BÚSQUEDA EXHAUSTIVA DE IMÁGENES LOCALES
                     posibles_rutas = [
+                        f"fotos/{nombre_limpio}.jpeg", f"fotos/{nombre_limpio}.jpg", f"fotos/{nombre_limpio}.png",
                         f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
-                        f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.lower()}.jpg",
                         f"fotos/{prod_id.capitalize()}.jpeg", f"fotos/{prod_id.capitalize()}.jpg",
-                        f"fotos/{prod_id.upper()}.jpeg", f"fotos/{prod_id.upper()}.jpg",
+                        f"fotos/{nombre_limpio.lower()}.jpeg", f"fotos/{nombre_limpio.title()}.jpeg"
                     ]
                     
                     ruta_img = None
@@ -175,18 +83,37 @@ def mostrar_productos(lista_productos):
                             ruta_img = ruta
                             break
                     
-                    # 2. Asignar la imagen "Cool" si no encontraste foto local
-                    if not ruta_img:
-                        ruta_img = obtener_imagen_cool(prod_id, prod['nombre'])
+                    # 2. Renderizar Imagen con tamaño fijo (HTML/CSS object-fit)
+                    if ruta_img:
+                        b64_img = get_image_base64(ruta_img)
+                        img_html = f'''
+                            <img src="data:image/jpeg;base64,{b64_img}" 
+                                 style="width: 100%; height: 280px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); margin-bottom: 10px;">
+                        '''
+                    else:
+                        # LOGO CHINGON (Foto no disponible)
+                        img_html = f'''
+                            <div style="width: 100%; height: 280px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 2px dashed #444; margin-bottom: 10px;">
+                                <div style="font-size: 4rem;">💀</div>
+                                <div style="color: #d81b60; font-weight: 900; font-size: 1.4rem; margin-top: 5px; letter-spacing: 2px;">CHINGON</div>
+                                <div style="color: #888; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto no disponible</div>
+                            </div>
+                        '''
 
-                    st.image(ruta_img, use_container_width=True)
+                    # 3. Insignia de Recomendado
+                    rec_badge = ""
+                    if prod.get("recomendado"):
+                        rec_badge = "<div style='margin-bottom: 8px;'><span style='background-color: #FFD700; color: #1a1a1a; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 2px 5px rgba(255,215,0,0.4);'>⭐ RECOMENDADOS</span></div>"
                     
-                    # 3. Textos agrupados y centrados
-                    desc_html = f"<div style='color: #777; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    # 4. Textos agrupados y centrados
+                    desc_html = f"<div style='color: #777; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    
                     st.markdown(f"""
-                        <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <div style="color: #333333; font-weight: 800; font-size: 1.6rem; margin-bottom: 5px; text-align: center; width: 100%;">{prod['nombre']}</div>
-                            <div class='precio-highlight' style="margin-bottom: 5px; text-align: center; width: 100%;">{prod['precio']}</div>
+                        <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100%;">
+                            {img_html}
+                            {rec_badge}
+                            <div style="color: #222; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.1;">{nombre}</div>
+                            <div class='precio-highlight' style="margin-bottom: 5px;">{prod['precio']}</div>
                             {desc_html}
                         </div>
                     """, unsafe_allow_html=True)
@@ -198,17 +125,20 @@ def mostrar_productos(lista_productos):
 # ==========================================
 
 granizados_tradicionales = [
+    # --- RECOMENDADOS Y PRIMEROS ---
+    {"id": "catrina", "nombre": "Catrina", "precio": "$16.000", "desc": "Vodka y whisky sabor sandía y fresa. Color negro.", "recomendado": True},
+    {"id": "701", "nombre": "701", "precio": "$16.000", "desc": "Fourloko sandía, whisky y tequila. Color fucsia.", "recomendado": True},
+    {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko limón, lima, naranja, frambuesa. Color azul.", "recomendado": True},
+    {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, granadina, vodka, tequila y kola. Rojo.", "recomendado": True},
+    
+    # --- DEMÁS SABORES ---
     {"id": "sinaloa", "nombre": "Sinaloa", "precio": "$16.000", "desc": "Smirnoff de lulo con apariencia color verde selva."},
     {"id": "chido", "nombre": "Chido", "precio": "$16.000", "desc": "Cachaza, maracuyá y mango maduro. Color amarillo."},
-    {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko limón, lima, naranja, frambuesa. Color azul."},
-    {"id": "701", "nombre": "701", "precio": "$16.000", "desc": "Fourloko sandía, whisky y tequila. Color fucsia."},
-    {"id": "catrina", "nombre": "Catrina", "precio": "$16.000", "desc": "Vodka y whisky sabor sandía y fresa. Color negro."},
     {"id": "no_manches", "nombre": "No Manches", "precio": "$16.000", "desc": "Ginebra y manzana. Color azul."},
     {"id": "que_onda", "nombre": "Que Onda Perdida", "precio": "$16.000", "desc": "Whisky. Color fucsia."},
     {"id": "tequilazo", "nombre": "Tequilazo", "precio": "$16.000", "desc": "Tequila y mango maduro. Color naranja."},
-    {"id": "que_pedo", "nombre": "Que Pedo?", "precio": "$16.000", "desc": "Vodka champagne y cereza. Color rojo."},
+    {"id": "que_pedo", "nombre": "Que pedo?", "precio": "$16.000", "desc": "Vodka champagne y cereza. Color rojo."},
     {"id": "la_peda", "nombre": "La Peda", "precio": "$16.000", "desc": "Whisky y tequila. Color dorado."},
-    {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, granadina, vodka, tequila y kola. Rojo."},
     {"id": "carnal", "nombre": "Carnal", "precio": "$16.000", "desc": "Tequila y mango viche. Color verde."},
     {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y fresa. Color rojo imperial."},
     {"id": "sin_alcohol", "nombre": "Granizado Sin Alcohol", "precio": "$16.000", "desc": "Preguntar disponibilidad."}
@@ -320,7 +250,6 @@ tabs = st.tabs([
 ])
 
 with tabs[0]:
-    # --- AQUÍ ESTÁ LA CORRECCIÓN DE TAMAÑOS ---
     st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.header("Granizados Tradicionales")
     mostrar_productos(granizados_tradicionales)
