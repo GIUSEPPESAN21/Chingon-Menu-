@@ -8,52 +8,127 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- ESTILOS CSS PERSONALIZADOS ---
+# --- ESTILOS CSS PERSONALIZADOS (TEMA NEÓN OSCURO) ---
 st.markdown("""
     <style>
-    /* Fondo claro general */
-    .stApp { background-color: #f8f9fa; }
+    /* Fondo oscuro para que resalte el Neón */
+    .stApp { background-color: #0a0a0c; color: #ffffff; }
     
-    /* Títulos y textos principales */
-    h1 { color: #1a1a1a !important; text-align: center; font-family: 'Arial Black', sans-serif; text-transform: uppercase; letter-spacing: 1px; font-size: 2.8rem !important; }
-    h2 { color: #d81b60 !important; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; margin-top: 30px; font-weight: 800; text-align: center; font-size: 2.2rem !important; }
+    /* Título principal Neón Rosa */
+    h1 { 
+        color: #ffffff !important; 
+        text-align: center; 
+        font-family: 'Arial Black', sans-serif; 
+        text-transform: uppercase; 
+        letter-spacing: 3px; 
+        font-size: 3.4rem !important; 
+        text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
+        margin-bottom: 10px;
+    }
     
-    /* Precios resaltados (Rosa profundo) */
-    .precio-highlight { color: #d81b60 !important; font-size: 1.8rem; font-weight: 900; margin-bottom: 5px; text-align: center; }
+    /* Subtítulos de categoría Neón Azul */
+    h2 { 
+        color: #00f3ff !important; 
+        border-bottom: 2px solid rgba(0, 243, 255, 0.3); 
+        padding-bottom: 10px; 
+        margin-top: 40px; 
+        font-weight: 900; 
+        text-align: center; 
+        font-size: 2.4rem !important; 
+        text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    /* Precios resaltados (Neón Verde/Cyan) */
+    .precio-highlight { 
+        color: #00ffcc !important; 
+        font-size: 1.9rem; 
+        font-weight: 900; 
+        margin-bottom: 5px; 
+        text-align: center; 
+        text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+    }
     
     /* Tarjetas de producto */
     [data-testid="column"] { 
-        background-color: #ffffff; 
+        background-color: #141419; 
         padding: 20px; 
-        border-radius: 12px; 
-        border: 1px solid #eaeaea; 
-        box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+        border-radius: 16px; 
+        border: 1px solid #2a2a35; 
+        box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
         margin-bottom: 15px;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+    
+    /* Efecto al pasar el mouse por encima de una bebida */
+    [data-testid="column"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(255, 0, 127, 0.2);
+        border-color: #ff007f;
     }
 
-    /* Caja de promociones */
-    .promo-box { background-color: #d81b60; color: white !important; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: bold; box-shadow: 0 4px 10px rgba(216, 27, 96, 0.2); font-size: 1.2rem; }
+    /* Caja de promociones (Gradiente Neón) */
+    .promo-box { 
+        background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%); 
+        color: white !important; 
+        padding: 15px; 
+        border-radius: 10px; 
+        text-align: center; 
+        margin-bottom: 20px; 
+        font-weight: 900; 
+        box-shadow: 0 0 20px rgba(255, 0, 127, 0.4); 
+        font-size: 1.3rem; 
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
     
     /* Ajuste de Pestañas (Tabs) */
-    .stTabs [data-baseweb="tab-list"] button { color: #777 !important; font-size: 1.2rem !important; }
-    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { color: #d81b60 !important; font-weight: bold; border-bottom-color: #d81b60 !important; }
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; justify-content: center; }
+    .stTabs [data-baseweb="tab-list"] button { color: #888 !important; font-size: 1.3rem !important; background-color: transparent; }
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { 
+        color: #ff007f !important; 
+        font-weight: 900; 
+        border-bottom: 3px solid #ff007f !important; 
+        text-shadow: 0 0 10px rgba(255, 0, 127, 0.6); 
+    }
     
-    /* REGLA MAESTRA: Forzar que todas las imágenes nativas midan lo mismo sin deformarse */
+    /* REGLA MAESTRA: Forzar tamaño, redondeado y centrado absoluto de las fotos */
+    [data-testid="stImage"] {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 15px;
+    }
     [data-testid="stImage"] img {
         width: 100% !important;
+        max-width: 320px !important; /* Evita que se estiren de más */
         height: 280px !important;
         object-fit: cover !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.08) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+        margin: 0 auto !important; /* Centrado forzado */
+    }
+    
+    /* Forzar centrado de los textos de markdown dentro de la tarjeta */
+    [data-testid="stMarkdownContainer"] {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
-st.markdown("<p style='text-align: center; color: #777777; font-size: 1.2rem;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.2rem; letter-spacing: 1px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
-# --- FUNCIÓN PARA MOSTRAR PRODUCTOS (Estable y sin Bugs de texto) ---
+# --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
@@ -82,33 +157,45 @@ def mostrar_productos(lista_productos):
                             ruta_img = ruta
                             break
                     
-                    # 2. Renderizar Imagen usando Streamlit Nativo (El CSS Global le da el tamaño perfecto)
+                    # 2. Renderizar Imagen Nativa o Logo Chingon
                     if ruta_img:
                         st.image(ruta_img, use_container_width=True)
                     else:
-                        # LOGO CHINGON (Foto no disponible)
-                        logo_path = "CHINGON COCTELES.jpg"
-                        if os.path.exists(logo_path):
+                        # Búsqueda precisa del LOGO CHINGON
+                        posibles_logos = [
+                            "fotos/CHINGON COCTELES.jpeg", 
+                            "fotos/CHINGON COCTELES.jpg", 
+                            "CHINGON COCTELES.jpeg", 
+                            "CHINGON COCTELES.jpg"
+                        ]
+                        logo_path = None
+                        for ruta_logo in posibles_logos:
+                            if os.path.exists(ruta_logo):
+                                logo_path = ruta_logo
+                                break
+                                
+                        if logo_path:
                             st.image(logo_path, use_container_width=True)
                         else:
-                            # Respaldo en caso de que ni el logo se encuentre
+                            # Respaldo visual Oscuro Neón si ni el logo se encuentra
                             st.markdown(f'''
-                                <div style="width: 100%; height: 280px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 2px dashed #444; margin-bottom: 10px;">
-                                    <div style="font-size: 4rem;">💀</div>
-                                    <div style="color: #d81b60; font-weight: 900; font-size: 1.4rem; margin-top: 5px; letter-spacing: 2px;">CHINGON</div>
-                                    <div style="color: #888; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto no disponible</div>
+                                <div style="width: 100%; max-width: 320px; height: 280px; background: #0a0a0c; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 15px auto;">
+                                    <div style="font-size: 4rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div>
+                                    <div style="color: #ff007f; font-weight: 900; font-size: 1.5rem; margin-top: 5px; letter-spacing: 3px; text-shadow: 0 0 8px #ff007f;">CHINGON</div>
+                                    <div style="color: #666; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto en camino...</div>
                                 </div>
                             ''', unsafe_allow_html=True)
 
-                    # 3. Textos agrupados y centrados (Separados de las imágenes)
-                    rec_badge = "<div style='margin-top: 10px; margin-bottom: 8px;'><span style='background-color: #FFD700; color: #1a1a1a; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 2px 5px rgba(255,215,0,0.4);'>⭐ RECOMENDADOS</span></div>" if prod.get("recomendado") else "<div style='margin-top: 10px;'></div>"
-                    desc_html = f"<div style='color: #777; font-size: 1.05rem; text-align: center; margin-top: 5px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    # 3. Textos agrupados y perfectamente centrados
+                    rec_badge = "<div style='margin-bottom: 8px;'><span style='background-color: #ff007f; color: #ffffff; padding: 4px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if prod.get("recomendado") else ""
+                    desc_html = f"<div style='color: #aaaaaa; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
                     
+                    # Título de producto más grande, en mayúsculas y con brillo neón sutil
                     st.markdown(f"""
-                        <div style="text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;">
+                        <div style="text-align: center; width: 100%;">
                             {rec_badge}
-                            <div style="color: #222; font-weight: 900; font-size: 1.5rem; margin-bottom: 5px; line-height: 1.1;">{nombre}</div>
-                            <div class='precio-highlight' style="margin-bottom: 5px;">{prod['precio']}</div>
+                            <div style="color: #ffffff; font-weight: 900; font-size: 1.7rem; margin-bottom: 8px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>
+                            <div class='precio-highlight'>{prod['precio']}</div>
                             {desc_html}
                         </div>
                     """, unsafe_allow_html=True)
@@ -288,11 +375,11 @@ st.divider()
 st.markdown("""
 <div style='text-align: center; color: #555555;'>
     <h4>¡Síguenos en nuestras redes!</h4>
-    <p style='font-size: 1.2rem;'>Instagram: <b>@chingon.ccteles</b></p>
+    <p style='font-size: 1.2rem; color: #888;'>Instagram: <b style='color: #ff007f;'>@chingon.ccteles</b></p>
     <br>
     <p style='margin-bottom: 2px; font-size: 1rem;'><b>Desarrollado por:</b></p>
     <p style='margin-bottom: 2px; font-size: 1rem;'>Joseph Javier Sánchez Acuña</p>
     <p style='margin-bottom: 15px; font-size: 0.85rem; color: #888888;'>CEO - SAVA SOFTWARE FOR ENGINEERING</p>
-    <p style='font-size: 1.1rem; font-weight: 800; color: #333333;'>© 2026 Chingon Cocteles. Todos los derechos reservados.</p>
+    <p style='font-size: 1.1rem; font-weight: 800; color: #888888;'>© 2026 Chingon Cocteles. Todos los derechos reservados.</p>
 </div>
 """, unsafe_allow_html=True)
