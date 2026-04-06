@@ -140,7 +140,7 @@ h2 {
 }
 </style>""", unsafe_allow_html=True)
 
-# --- ENCABEZADO (Renderizado como HTML en lugar de st.title para evitar íconos) ---
+# --- ENCABEZADO (Renderizado como HTML) ---
 st.markdown("<h1>💀 CHINGON COCTELES 💀</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 15px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
@@ -214,20 +214,24 @@ def mostrar_productos(lista_productos):
 # ==========================================
 
 granizados_tradicionales = [
-    {"id": "catrina", "nombre": "Catrina", "precio": "$16.000", "desc": "Vodka y whisky sabor sandía y fresa. Color negro.", "recomendado": True},
-    {"id": "701", "nombre": "701", "precio": "$16.000", "desc": "Fourloko sandía, whisky y tequila. Color fucsia.", "recomendado": True},
-    {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko limón, lima, naranja, frambuesa. Color azul.", "recomendado": True},
-    {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, granadina, vodka, tequila y kola. Rojo.", "recomendado": True},
-    {"id": "sinaloa", "nombre": "Sinaloa", "precio": "$16.000", "desc": "Smirnoff de lulo con apariencia color verde selva."},
-    {"id": "chido", "nombre": "Chido", "precio": "$16.000", "desc": "Cachaza, maracuyá y mango maduro. Color amarillo."},
-    {"id": "no_manches", "nombre": "No Manches", "precio": "$16.000", "desc": "Ginebra y manzana. Color azul."},
-    {"id": "que_onda", "nombre": "Que Onda Perdida", "precio": "$16.000", "desc": "Whisky. Color fucsia."},
-    {"id": "tequilazo", "nombre": "Tequilazo", "precio": "$16.000", "desc": "Tequila y mango maduro. Color naranja."},
-    {"id": "que_pedo", "nombre": "Que pedo?", "precio": "$16.000", "desc": "Vodka champagne y cereza. Color rojo."},
-    {"id": "la_peda", "nombre": "La Peda", "precio": "$16.000", "desc": "Whisky y tequila. Color dorado."},
-    {"id": "carnal", "nombre": "Carnal", "precio": "$16.000", "desc": "Tequila y mango viche. Color verde."},
-    {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y fresa. Color rojo imperial."},
-    {"id": "sin_alcohol", "nombre": "Granizado Sin Alcohol", "precio": "$16.000", "desc": "Preguntar disponibilidad."}
+    # --- RECOMENDADOS Y PRIMEROS ---
+    {"id": "catrina", "nombre": "Catrina", "precio": "$16.000", "desc": "Vodka y Whisky Con sabor a Sandia y Fresa Apariencia Color Negro.", "recomendado": True},
+    {"id": "701", "nombre": "701", "precio": "$16.000", "desc": "Fourloko Sandia, Whisky y Tequila Con Apariencia Color Fucsia.", "recomendado": True},
+    {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko Sabor a Limón, Lima, Naranja, Frambuesa, Notas De Banano y Melocotón Con Apariencia y Brillo Color Azul.", "recomendado": True},
+    {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, Granadina, Vodka, Tequila y Kola Con Apariencia Color Rojo.", "recomendado": True},
+    
+    # --- DEMÁS SABORES SEGÚN EL PDF ---
+    {"id": "sinaloa", "nombre": "Sinaloa", "precio": "$16.000", "desc": "Sminorff De Lulo Con Apariencia Color Verde Selva."},
+    {"id": "no_mames", "nombre": "No Mames", "precio": "$16.000", "desc": "Jagermeister y Redbull Con Apariencia Color Caramelo."},
+    {"id": "tijuana", "nombre": "Tijuana", "precio": "$16.000", "desc": "Vodka y Algodón De Azúcar Con Apariencia Color Azul Baby."},
+    {"id": "que_pedo", "nombre": "Que Pedo?", "precio": "$16.000", "desc": "Vodka Champagne y Cereza Con Apariencia Color Rojo."},
+    {"id": "morras", "nombre": "Morras", "precio": "$16.000", "desc": "Whisky, Melocotón y Sandia Con Apariencia Color Rojo Tenue."},
+    {"id": "que_onda", "nombre": "Que Onda Perdida", "precio": "$16.000", "desc": "Whisky Con Apariencia Color Fucsia."},
+    {"id": "wey", "nombre": "Wey", "precio": "$16.000", "desc": "Mezcla Lista Para Granizar Con Sabor A Maracuyá y Lulo Con Viche, Tiene Apariencia Color Amarillo Naranja."},
+    {"id": "carnal", "nombre": "Carnal", "precio": "$16.000", "desc": "Tequila y Mango Viche Con Apariencia Color Verde."},
+    {"id": "no_manches", "nombre": "No Manches", "precio": "$16.000", "desc": "Ginebra y Manzana Con Apariencia Color Azul."},
+    {"id": "boom", "nombre": "Boom", "precio": "$16.000", "desc": "Combinado de Diferentes Sabores de Granizados Disponibles en Maquina."},
+    {"id": "tequilazo", "nombre": "Tequilazo", "precio": "$16.000", "desc": "Tequila y Mango Maduro Con Apariencia Color Naranja."}
 ]
 
 granizados_cremosos = [
@@ -255,10 +259,10 @@ micheladas_milos = [
     {"id": "mich_luli", "nombre": "Michelada Luli Chela", "precio": "$16.000", "desc": "Lulo, sirope de lulo, limón y choclitos."},
     {"id": "mich_mango", "nombre": "Michelada de Mango", "precio": "$15.000", "desc": "Sal, mango, zumo de limón y hielo."},
     {"id": "mich_maracumango", "nombre": "Michelada Maracumango", "precio": "$15.000", "desc": "Mango biche, maracuyá, limón y hielo."},
-    {"id": "mich_cereza", "nombre": "Michelada de Cereza", "precio": "$15.000", "desc": "Cereza, limón y hielo."},
-    {"id": "mich_maracuya", "nombre": "Michelada de Maracuyá", "precio": "$15.000", "desc": "Maracuyá, limón y hielo."},
+    {"id": "mich_cereza", "nombre": "Michelada de Cereza", "precio": "$15.000", "desc": "Vaso Con Cerveza Michelado Con Sal, Cereza, Zumo de Limón y Hielo."},
+    {"id": "mich_maracuya", "nombre": "Michelada de Maracuyá", "precio": "$15.000", "desc": "Vaso Con Cerveza Michelado Con Sal, Maracuyá, Zumo de Limón y Hielo."},
     {"id": "milo_oreo", "nombre": "Milo Oreo", "precio": "$13.000", "desc": "Crema de chocolate, chantilly y galletas Oreo."},
-    {"id": "milo_ramo", "nombre": "Milo Ramito", "precio": "$13.000", "desc": "Crema de chocolate, chantilly y Chocoramo."}
+    {"id": "milo_ramo", "nombre": "Milo Ramito", "precio": "$13.000", "desc": "Milo Con Crema de Chocolate, Chantillí y Cakes de Choco ramo."}
 ]
 
 ramen = [
@@ -337,7 +341,8 @@ tabs = st.tabs([
 ])
 
 with tabs[0]:
-    st.markdown("<div class='promo-box'>Tamaños: 14 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
+    # Ajuste según la carta: el tamaño base es de 12 Oz.
+    st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.markdown("<h2>Granizados Tradicionales</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_tradicionales)
     
