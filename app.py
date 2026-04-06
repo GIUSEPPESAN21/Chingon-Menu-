@@ -6,92 +6,140 @@ import base64
 st.set_page_config(
     page_title="Chingon Cocteles | Menú Digital",
     page_icon="💀",
-    layout="centered"
+    layout="centered",
+    initial_sidebar_state="collapsed" # Ayuda a dar más espacio en móviles
 )
 
-# --- ESTILOS CSS PERSONALIZADOS (TEMA NEÓN OSCURO) ---
+# --- ESTILOS CSS PERSONALIZADOS (TEMA NEÓN OSCURO & MOBILE FIRST) ---
 st.markdown("""
     <style>
     /* Fondo oscuro para que resalte el Neón */
     .stApp { background-color: #0a0a0c; color: #ffffff; }
     
-    /* Título principal Neón Rosa */
+    /* --- TIPOGRAFÍA Y TÍTULOS --- */
     h1 { 
         color: #ffffff !important; 
         text-align: center; 
         font-family: 'Arial Black', sans-serif; 
         text-transform: uppercase; 
-        letter-spacing: 3px; 
-        font-size: 3.4rem !important; 
-        text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f, 0 0 40px #ff007f;
-        margin-bottom: 10px;
+        letter-spacing: 2px; 
+        font-size: 2.8rem !important; /* Ligeramente más pequeño para móvil por defecto */
+        text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
+        margin-bottom: 5px;
+        line-height: 1.1;
     }
     
-    /* Subtítulos de categoría Neón Azul */
     h2 { 
         color: #00f3ff !important; 
         border-bottom: 2px solid rgba(0, 243, 255, 0.3); 
-        padding-bottom: 10px; 
-        margin-top: 40px; 
+        padding-bottom: 8px; 
+        margin-top: 30px; 
         font-weight: 900; 
         text-align: center; 
-        font-size: 2.4rem !important; 
+        font-size: 1.8rem !important; 
         text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
         text-transform: uppercase;
         letter-spacing: 1px;
     }
     
-    /* Tarjetas de producto contenedor principal Streamlit */
+    /* --- TARJETAS DE PRODUCTO (Adaptativas) --- */
     [data-testid="column"] { 
         background-color: #141419; 
         padding: 15px; 
         border-radius: 16px; 
         border: 1px solid #2a2a35; 
-        box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
+        box-shadow: 0 6px 12px rgba(0,0,0,0.5); 
         margin-bottom: 15px;
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        /* IMPORTANTE PARA CENTRADO ABSOLUTO */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     
-    /* Efecto al pasar el mouse por encima de una bebida */
     [data-testid="column"]:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(255, 0, 127, 0.2);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 16px rgba(255, 0, 127, 0.2);
         border-color: #ff007f;
     }
 
-    /* Caja de promociones (Gradiente Neón) */
+    /* --- CAJA DE PROMOCIONES --- */
     .promo-box { 
         background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%); 
         color: white !important; 
-        padding: 15px; 
+        padding: 12px; 
         border-radius: 10px; 
         text-align: center; 
         margin-bottom: 20px; 
         font-weight: 900; 
-        box-shadow: 0 0 20px rgba(255, 0, 127, 0.4); 
-        font-size: 1.3rem; 
+        box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); 
+        font-size: 1.1rem; 
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
     }
     
-    /* Ajuste de Pestañas (Tabs) */
-    .stTabs [data-baseweb="tab-list"] { gap: 10px; justify-content: center; }
-    .stTabs [data-baseweb="tab-list"] button { color: #888 !important; font-size: 1.3rem !important; background-color: transparent; }
+    /* --- PESTAÑAS (TABS) RESPONSIVAS --- */
+    /* Asegurar que las pestañas sean scrolleables horizontalmente en móvil */
+    .stTabs [data-baseweb="tab-list"] { 
+        gap: 8px; 
+        overflow-x: auto; 
+        white-space: nowrap;
+        padding-bottom: 5px;
+        -webkit-overflow-scrolling: touch; /* Suavidad en iOS */
+    }
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar { height: 4px; }
+    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb { background-color: #ff007f; border-radius: 4px; }
+    
+    .stTabs [data-baseweb="tab-list"] button { 
+        color: #888 !important; 
+        font-size: 1.1rem !important; 
+        background-color: transparent; 
+        padding: 10px 15px !important; /* Área táctil más grande */
+    }
     .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { 
         color: #ff007f !important; 
         font-weight: 900; 
         border-bottom: 3px solid #ff007f !important; 
-        text-shadow: 0 0 10px rgba(255, 0, 127, 0.6); 
+        text-shadow: 0 0 8px rgba(255, 0, 127, 0.6); 
     }
     
-    /* Eliminar padding extra de markdown */
+    /* Eliminar padding extra de markdown para no romper el centrado */
     .element-container st-emotion-cache-1wmy9hl { margin-bottom: 0px !important; }
+
+    /* --- MEDIA QUERIES PARA CELULARES (Menos de 768px de ancho) --- */
+    @media (max-width: 768px) {
+        /* Forzar que las columnas de Streamlit se apilen una sobre otra al 100% del ancho */
+        [data-testid="column"] {
+            width: 100% !important;
+            flex: 1 1 100% !important;
+            max-width: 100% !important;
+            margin-bottom: 20px;
+        }
+        
+        /* Ajustar tamaños de fuente para que quepan bien */
+        h1 { font-size: 2.2rem !important; letter-spacing: 1px; }
+        h2 { font-size: 1.6rem !important; margin-top: 25px; }
+        
+        .promo-box { font-size: 1rem; padding: 10px; }
+        
+        /* Hacer que el contenedor flex principal se comporte bien en móvil */
+        div[data-testid="stHorizontalBlock"] {
+            flex-direction: column !important;
+        }
+    }
+    
+    /* Ajustes para pantallas de escritorio (Más de 768px) */
+    @media (min-width: 769px) {
+        h1 { font-size: 3.4rem !important; }
+        h2 { font-size: 2.4rem !important; }
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
-st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.2rem; letter-spacing: 1px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 15px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
 # --- FUNCIÓN PARA CONVERTIR IMAGEN A BASE64 ---
 def get_image_base64(filepath):
@@ -138,7 +186,9 @@ def mostrar_productos(lista_productos):
                     img_html = ""
                     if ruta_img:
                         b64_img = get_image_base64(ruta_img)
-                        img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 300px; height: 260px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin-bottom: 12px;">'
+                        # Ancho al 100%, pero con max-width para que no se estire demasiado en desktop.
+                        # Altura fija o aspect-ratio es clave para móvil.
+                        img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin: 0 auto 12px auto; display: block;">'
                     else:
                         # Búsqueda precisa del LOGO CHINGON
                         posibles_logos = [
@@ -155,35 +205,35 @@ def mostrar_productos(lista_productos):
                                 
                         if logo_path:
                             b64_logo = get_image_base64(logo_path)
-                            # Logo con object-fit: contain para que no se corte
-                            img_html = f'<img src="data:image/jpeg;base64,{b64_logo}" style="width: 100%; max-width: 300px; height: 260px; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #222; margin-bottom: 12px;">'
+                            # Logo con object-fit: contain
+                            img_html = f'<img src="data:image/jpeg;base64,{b64_logo}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #222; margin: 0 auto 12px auto; display: block;">'
                         else:
-                            # Respaldo visual Oscuro Neón si ni el logo se encuentra
+                            # Respaldo visual Oscuro Neón
                             img_html = f'''
-                                <div style="width: 100%; max-width: 300px; height: 260px; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin-bottom: 12px;">
+                                <div style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 12px auto;">
                                     <div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div>
                                     <div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div>
                                     <div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div>
                                 </div>
                             '''
 
-                    rec_badge = "<div style='margin-bottom: 8px;'><span style='background-color: #ff007f; color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
-                    desc_html = f"<div style='color: #aaaaaa; font-size: 1rem; text-align: center; margin-top: 6px; line-height: 1.3; width: 100%;'>{desc}</div>" if desc else ""
+                    rec_badge = "<div style='margin-bottom: 10px;'><span style='background-color: #ff007f; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
+                    desc_html = f"<div style='color: #aaaaaa; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.3; width: 100%; max-width: 90%; margin-left: auto; margin-right: auto;'>{desc}</div>" if desc else ""
                     
-                    # Ensamblamos todo en un solo contenedor centrado
+                    # Ensamblamos todo en un solo contenedor forzado al centro
                     tarjeta_completa = f"""
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 5px;">
                             {img_html}
                             {rec_badge}
-                            <div style="color: #ffffff; font-weight: 900; font-size: 1.5rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>
-                            <div style="color: #00ffcc; font-size: 1.6rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>
+                            <div style="color: #ffffff; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>
+                            <div style="color: #00ffcc; font-size: 1.7rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>
                             {desc_html}
                         </div>
                     """
                     
                     st.markdown(tarjeta_completa, unsafe_allow_html=True)
                     
-        st.write("---")
+        # st.write("---") # Comentado porque en móvil la línea divisoria a veces satura la vista.
 
 # ==========================================
 # BASE DE DATOS COMPLETA 
