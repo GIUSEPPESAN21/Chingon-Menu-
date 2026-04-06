@@ -378,7 +378,7 @@ st.divider()
 st.markdown("""
 <div style='text-align: center; color: #555555;'>
     <h4>¡Síguenos en nuestras redes!</h4>
-    <p style='font-size: 1.2rem; color: #888;'>Instagram: <b style='color: #ff007f;'>@chingon.ccteles</b></p>
+    <p style='font-size: 1.2rem; color: #888;'>Instagram: <a href='https://www.instagram.com/chingon_cocteles/' target='_blank' style='color: #ff007f; text-decoration: none; font-weight: bold;'>@chingon_cocteles</a></p>
     <br>
     <p style='margin-bottom: 2px; font-size: 1rem;'><b>Desarrollado por:</b></p>
     <p style='margin-bottom: 2px; font-size: 1rem;'>Joseph Javier Sánchez Acuña</p>
