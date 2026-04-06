@@ -11,131 +11,119 @@ st.set_page_config(
 )
 
 # --- ESTILOS CSS PERSONALIZADOS (TEMA NEÓN OSCURO & MOBILE FIRST) ---
-st.markdown("""
-    <style>
-    /* Fondo oscuro para que resalte el Neón */
-    .stApp { background-color: #0a0a0c; color: #ffffff; }
-    
-    /* --- TIPOGRAFÍA Y TÍTULOS --- */
-    h1 { 
-        color: #ffffff !important; 
-        text-align: center; 
-        font-family: 'Arial Black', sans-serif; 
-        text-transform: uppercase; 
-        letter-spacing: 2px; 
-        font-size: 2.8rem !important; /* Ligeramente más pequeño para móvil por defecto */
-        text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
-        margin-bottom: 5px;
-        line-height: 1.1;
-    }
-    
-    h2 { 
-        color: #00f3ff !important; 
-        border-bottom: 2px solid rgba(0, 243, 255, 0.3); 
-        padding-bottom: 8px; 
-        margin-top: 30px; 
-        font-weight: 900; 
-        text-align: center; 
-        font-size: 1.8rem !important; 
-        text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-    
-    /* --- TARJETAS DE PRODUCTO (Adaptativas) --- */
-    [data-testid="column"] { 
-        background-color: #141419; 
-        padding: 15px; 
-        border-radius: 16px; 
-        border: 1px solid #2a2a35; 
-        box-shadow: 0 6px 12px rgba(0,0,0,0.5); 
-        margin-bottom: 15px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        /* IMPORTANTE PARA CENTRADO ABSOLUTO */
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    [data-testid="column"]:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 16px rgba(255, 0, 127, 0.2);
-        border-color: #ff007f;
-    }
+# Se elimina la sangría al inicio para evitar conflictos con el renderizado Markdown
+st.markdown("""<style>
+/* Fondo oscuro para que resalte el Neón */
+.stApp { background-color: #0a0a0c; color: #ffffff; }
 
-    /* --- CAJA DE PROMOCIONES --- */
-    .promo-box { 
-        background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%); 
-        color: white !important; 
-        padding: 12px; 
-        border-radius: 10px; 
-        text-align: center; 
-        margin-bottom: 20px; 
-        font-weight: 900; 
-        box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); 
-        font-size: 1.1rem; 
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    /* --- PESTAÑAS (TABS) RESPONSIVAS --- */
-    /* Asegurar que las pestañas sean scrolleables horizontalmente en móvil */
-    .stTabs [data-baseweb="tab-list"] { 
-        gap: 8px; 
-        overflow-x: auto; 
-        white-space: nowrap;
-        padding-bottom: 5px;
-        -webkit-overflow-scrolling: touch; /* Suavidad en iOS */
-    }
-    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar { height: 4px; }
-    .stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb { background-color: #ff007f; border-radius: 4px; }
-    
-    .stTabs [data-baseweb="tab-list"] button { 
-        color: #888 !important; 
-        font-size: 1.1rem !important; 
-        background-color: transparent; 
-        padding: 10px 15px !important; /* Área táctil más grande */
-    }
-    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { 
-        color: #ff007f !important; 
-        font-weight: 900; 
-        border-bottom: 3px solid #ff007f !important; 
-        text-shadow: 0 0 8px rgba(255, 0, 127, 0.6); 
-    }
-    
-    /* Eliminar padding extra de markdown para no romper el centrado */
-    .element-container st-emotion-cache-1wmy9hl { margin-bottom: 0px !important; }
+/* --- TIPOGRAFÍA Y TÍTULOS --- */
+h1 { 
+    color: #ffffff !important; 
+    text-align: center; 
+    font-family: 'Arial Black', sans-serif; 
+    text-transform: uppercase; 
+    letter-spacing: 2px; 
+    font-size: 2.8rem !important; 
+    text-shadow: 0 0 10px #ff007f, 0 0 20px #ff007f, 0 0 30px #ff007f;
+    margin-bottom: 5px;
+    line-height: 1.1;
+}
 
-    /* --- MEDIA QUERIES PARA CELULARES (Menos de 768px de ancho) --- */
-    @media (max-width: 768px) {
-        /* Forzar que las columnas de Streamlit se apilen una sobre otra al 100% del ancho */
-        [data-testid="column"] {
-            width: 100% !important;
-            flex: 1 1 100% !important;
-            max-width: 100% !important;
-            margin-bottom: 20px;
-        }
-        
-        /* Ajustar tamaños de fuente para que quepan bien */
-        h1 { font-size: 2.2rem !important; letter-spacing: 1px; }
-        h2 { font-size: 1.6rem !important; margin-top: 25px; }
-        
-        .promo-box { font-size: 1rem; padding: 10px; }
-        
-        /* Hacer que el contenedor flex principal se comporte bien en móvil */
-        div[data-testid="stHorizontalBlock"] {
-            flex-direction: column !important;
-        }
+h2 { 
+    color: #00f3ff !important; 
+    border-bottom: 2px solid rgba(0, 243, 255, 0.3); 
+    padding-bottom: 8px; 
+    margin-top: 30px; 
+    font-weight: 900; 
+    text-align: center; 
+    font-size: 1.8rem !important; 
+    text-shadow: 0 0 8px rgba(0, 243, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- TARJETAS DE PRODUCTO (Adaptativas) --- */
+[data-testid="column"] { 
+    background-color: #141419; 
+    padding: 15px; 
+    border-radius: 16px; 
+    border: 1px solid #2a2a35; 
+    box-shadow: 0 6px 12px rgba(0,0,0,0.5); 
+    margin-bottom: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+[data-testid="column"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(255, 0, 127, 0.2);
+    border-color: #ff007f;
+}
+
+/* --- CAJA DE PROMOCIONES --- */
+.promo-box { 
+    background: linear-gradient(135deg, #ff007f 0%, #7000ff 100%); 
+    color: white !important; 
+    padding: 12px; 
+    border-radius: 10px; 
+    text-align: center; 
+    margin-bottom: 20px; 
+    font-weight: 900; 
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.4); 
+    font-size: 1.1rem; 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* --- PESTAÑAS (TABS) RESPONSIVAS --- */
+.stTabs [data-baseweb="tab-list"] { 
+    gap: 8px; 
+    overflow-x: auto; 
+    white-space: nowrap;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+}
+.stTabs [data-baseweb="tab-list"]::-webkit-scrollbar { height: 4px; }
+.stTabs [data-baseweb="tab-list"]::-webkit-scrollbar-thumb { background-color: #ff007f; border-radius: 4px; }
+
+.stTabs [data-baseweb="tab-list"] button { 
+    color: #888 !important; 
+    font-size: 1.1rem !important; 
+    background-color: transparent; 
+    padding: 10px 15px !important; 
+}
+.stTabs [data-baseweb="tab-list"] button[aria-selected="true"] { 
+    color: #ff007f !important; 
+    font-weight: 900; 
+    border-bottom: 3px solid #ff007f !important; 
+    text-shadow: 0 0 8px rgba(255, 0, 127, 0.6); 
+}
+
+/* Eliminar padding extra de markdown */
+.element-container st-emotion-cache-1wmy9hl { margin-bottom: 0px !important; }
+
+/* --- MEDIA QUERIES PARA CELULARES --- */
+@media (max-width: 768px) {
+    [data-testid="column"] {
+        width: 100% !important;
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 20px;
     }
-    
-    /* Ajustes para pantallas de escritorio (Más de 768px) */
-    @media (min-width: 769px) {
-        h1 { font-size: 3.4rem !important; }
-        h2 { font-size: 2.4rem !important; }
-    }
-    </style>
-""", unsafe_allow_html=True)
+    h1 { font-size: 2.2rem !important; letter-spacing: 1px; }
+    h2 { font-size: 1.6rem !important; margin-top: 25px; }
+    .promo-box { font-size: 1rem; padding: 10px; }
+    div[data-testid="stHorizontalBlock"] { flex-direction: column !important; }
+}
+
+@media (min-width: 769px) {
+    h1 { font-size: 3.4rem !important; }
+    h2 { font-size: 2.4rem !important; }
+}
+</style>""", unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
@@ -165,10 +153,8 @@ def mostrar_productos(lista_productos):
                     desc = prod.get('desc', '')
                     recomendado = prod.get('recomendado', False)
                     
-                    # Limpiamos el nombre de caracteres especiales para la búsqueda
                     nombre_limpio = nombre.replace("?", "")
                     
-                    # 1. BÚSQUEDA EXHAUSTIVA DE IMÁGENES LOCALES
                     posibles_rutas = [
                         f"fotos/{nombre_limpio}.jpeg", f"fotos/{nombre_limpio}.jpg", f"fotos/{nombre_limpio}.png",
                         f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
@@ -182,21 +168,13 @@ def mostrar_productos(lista_productos):
                             ruta_img = ruta
                             break
                     
-                    # 2. Construir el bloque HTML completo para la tarjeta
+                    # Armado en UNA sola línea continua para evitar el bug de espacios de Markdown
                     img_html = ""
                     if ruta_img:
                         b64_img = get_image_base64(ruta_img)
-                        # Ancho al 100%, pero con max-width para que no se estire demasiado en desktop.
-                        # Altura fija o aspect-ratio es clave para móvil.
                         img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin: 0 auto 12px auto; display: block;">'
                     else:
-                        # Búsqueda precisa del LOGO CHINGON
-                        posibles_logos = [
-                            "CHINGON COCTELES.jpeg", 
-                            "CHINGON COCTELES.jpg",
-                            "fotos/CHINGON COCTELES.jpeg", 
-                            "fotos/CHINGON COCTELES.jpg"
-                        ]
+                        posibles_logos = ["CHINGON COCTELES.jpeg", "CHINGON COCTELES.jpg", "fotos/CHINGON COCTELES.jpeg", "fotos/CHINGON COCTELES.jpg"]
                         logo_path = None
                         for ruta_logo in posibles_logos:
                             if os.path.exists(ruta_logo):
@@ -205,35 +183,17 @@ def mostrar_productos(lista_productos):
                                 
                         if logo_path:
                             b64_logo = get_image_base64(logo_path)
-                            # Logo con object-fit: contain
                             img_html = f'<img src="data:image/jpeg;base64,{b64_logo}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #222; margin: 0 auto 12px auto; display: block;">'
                         else:
-                            # Respaldo visual Oscuro Neón
-                            img_html = f'''
-                                <div style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 12px auto;">
-                                    <div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div>
-                                    <div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div>
-                                    <div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div>
-                                </div>
-                            '''
+                            img_html = '<div style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 12px auto;"><div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div><div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div><div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div></div>'
 
                     rec_badge = "<div style='margin-bottom: 10px;'><span style='background-color: #ff007f; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
                     desc_html = f"<div style='color: #aaaaaa; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.3; width: 100%; max-width: 90%; margin-left: auto; margin-right: auto;'>{desc}</div>" if desc else ""
                     
-                    # Ensamblamos todo en un solo contenedor forzado al centro
-                    tarjeta_completa = f"""
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 5px;">
-                            {img_html}
-                            {rec_badge}
-                            <div style="color: #ffffff; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>
-                            <div style="color: #00ffcc; font-size: 1.7rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>
-                            {desc_html}
-                        </div>
-                    """
+                    # TODO el HTML pegado al inicio de la línea (sin indentación) para que Streamlit NO lo lea como código.
+                    tarjeta_completa = f'<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 5px;">\n{img_html}\n{rec_badge}\n<div style="color: #ffffff; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>\n<div style="color: #00ffcc; font-size: 1.7rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>\n{desc_html}\n</div>'
                     
                     st.markdown(tarjeta_completa, unsafe_allow_html=True)
-                    
-        # st.write("---") # Comentado porque en móvil la línea divisoria a veces satura la vista.
 
 # ==========================================
 # BASE DE DATOS COMPLETA 
