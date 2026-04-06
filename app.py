@@ -92,13 +92,23 @@ def mostrar_productos(lista_productos):
                         '''
                     else:
                         # LOGO CHINGON (Foto no disponible)
-                        img_html = f'''
-                            <div style="width: 100%; height: 280px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 2px dashed #444; margin-bottom: 10px;">
-                                <div style="font-size: 4rem;">💀</div>
-                                <div style="color: #d81b60; font-weight: 900; font-size: 1.4rem; margin-top: 5px; letter-spacing: 2px;">CHINGON</div>
-                                <div style="color: #888; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto no disponible</div>
-                            </div>
-                        '''
+                        logo_path = "CHINGON COCTELES.jpg"
+                        if os.path.exists(logo_path):
+                            b64_logo = get_image_base64(logo_path)
+                            # Usamos object-fit: contain y fondo oscuro para que el logo neón luzca perfecto
+                            img_html = f'''
+                                <img src="data:image/jpeg;base64,{b64_logo}" 
+                                     style="width: 100%; height: 280px; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 1px solid #222; margin-bottom: 10px;">
+                            '''
+                        else:
+                            # Respaldo en caso de que el archivo del logo no se encuentre
+                            img_html = f'''
+                                <div style="width: 100%; height: 280px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.08); border: 2px dashed #444; margin-bottom: 10px;">
+                                    <div style="font-size: 4rem;">💀</div>
+                                    <div style="color: #d81b60; font-weight: 900; font-size: 1.4rem; margin-top: 5px; letter-spacing: 2px;">CHINGON</div>
+                                    <div style="color: #888; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto no disponible</div>
+                                </div>
+                            '''
 
                     # 3. Insignia de Recomendado
                     rec_badge = ""
