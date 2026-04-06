@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import base64
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
@@ -40,28 +41,14 @@ st.markdown("""
         letter-spacing: 1px;
     }
     
-    /* Precios resaltados (Neón Verde/Cyan) */
-    .precio-highlight { 
-        color: #00ffcc !important; 
-        font-size: 1.9rem; 
-        font-weight: 900; 
-        margin-bottom: 5px; 
-        text-align: center; 
-        text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
-    }
-    
-    /* Tarjetas de producto */
+    /* Tarjetas de producto contenedor principal Streamlit */
     [data-testid="column"] { 
         background-color: #141419; 
-        padding: 20px; 
+        padding: 15px; 
         border-radius: 16px; 
         border: 1px solid #2a2a35; 
         box-shadow: 0 8px 16px rgba(0,0,0,0.5); 
         margin-bottom: 15px;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        text-align: center !important;
         transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     }
     
@@ -97,36 +84,23 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(255, 0, 127, 0.6); 
     }
     
-    /* REGLA MAESTRA: Forzar tamaño, redondeado y centrado absoluto de las fotos */
-    [data-testid="stImage"] {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        margin-bottom: 15px;
-    }
-    [data-testid="stImage"] img {
-        width: 100% !important;
-        max-width: 320px !important; /* Evita que se estiren de más */
-        height: 280px !important;
-        object-fit: cover !important;
-        border-radius: 16px !important;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
-        margin: 0 auto !important; /* Centrado forzado */
-    }
-    
-    /* Forzar centrado de los textos de markdown dentro de la tarjeta */
-    [data-testid="stMarkdownContainer"] {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+    /* Eliminar padding extra de markdown */
+    .element-container st-emotion-cache-1wmy9hl { margin-bottom: 0px !important; }
     </style>
 """, unsafe_allow_html=True)
 
 # --- ENCABEZADO ---
 st.title("💀 CHINGON COCTELES 💀")
 st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.2rem; letter-spacing: 1px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
+
+# --- FUNCIÓN PARA CONVERTIR IMAGEN A BASE64 ---
+def get_image_base64(filepath):
+    try:
+        with open(filepath, "rb") as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except Exception as e:
+        return ""
 
 # --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
 def mostrar_productos(lista_productos):
@@ -139,6 +113,9 @@ def mostrar_productos(lista_productos):
                     prod = lista_productos[i+j]
                     prod_id = prod['id']
                     nombre = prod['nombre']
+                    precio = prod['precio']
+                    desc = prod.get('desc', '')
+                    recomendado = prod.get('recomendado', False)
                     
                     # Limpiamos el nombre de caracteres especiales para la búsqueda
                     nombre_limpio = nombre.replace("?", "")
@@ -157,16 +134,18 @@ def mostrar_productos(lista_productos):
                             ruta_img = ruta
                             break
                     
-                    # 2. Renderizar Imagen Nativa o Logo Chingon
+                    # 2. Construir el bloque HTML completo para la tarjeta
+                    img_html = ""
                     if ruta_img:
-                        st.image(ruta_img, use_container_width=True)
+                        b64_img = get_image_base64(ruta_img)
+                        img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 300px; height: 260px; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin-bottom: 12px;">'
                     else:
                         # Búsqueda precisa del LOGO CHINGON
                         posibles_logos = [
-                            "fotos/CHINGON COCTELES.jpeg", 
-                            "fotos/CHINGON COCTELES.jpg", 
                             "CHINGON COCTELES.jpeg", 
-                            "CHINGON COCTELES.jpg"
+                            "CHINGON COCTELES.jpg",
+                            "fotos/CHINGON COCTELES.jpeg", 
+                            "fotos/CHINGON COCTELES.jpg"
                         ]
                         logo_path = None
                         for ruta_logo in posibles_logos:
@@ -175,30 +154,34 @@ def mostrar_productos(lista_productos):
                                 break
                                 
                         if logo_path:
-                            st.image(logo_path, use_container_width=True)
+                            b64_logo = get_image_base64(logo_path)
+                            # Logo con object-fit: contain para que no se corte
+                            img_html = f'<img src="data:image/jpeg;base64,{b64_logo}" style="width: 100%; max-width: 300px; height: 260px; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #222; margin-bottom: 12px;">'
                         else:
                             # Respaldo visual Oscuro Neón si ni el logo se encuentra
-                            st.markdown(f'''
-                                <div style="width: 100%; max-width: 320px; height: 280px; background: #0a0a0c; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 15px auto;">
-                                    <div style="font-size: 4rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div>
-                                    <div style="color: #ff007f; font-weight: 900; font-size: 1.5rem; margin-top: 5px; letter-spacing: 3px; text-shadow: 0 0 8px #ff007f;">CHINGON</div>
-                                    <div style="color: #666; font-size: 0.9rem; margin-top: 5px; font-style: italic;">Foto en camino...</div>
+                            img_html = f'''
+                                <div style="width: 100%; max-width: 300px; height: 260px; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin-bottom: 12px;">
+                                    <div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div>
+                                    <div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div>
+                                    <div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div>
                                 </div>
-                            ''', unsafe_allow_html=True)
+                            '''
 
-                    # 3. Textos agrupados y perfectamente centrados
-                    rec_badge = "<div style='margin-bottom: 8px;'><span style='background-color: #ff007f; color: #ffffff; padding: 4px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if prod.get("recomendado") else ""
-                    desc_html = f"<div style='color: #aaaaaa; font-size: 1.1rem; text-align: center; margin-top: 8px; line-height: 1.4; width: 100%;'>{prod['desc']}</div>" if prod.get("desc") else ""
+                    rec_badge = "<div style='margin-bottom: 8px;'><span style='background-color: #ff007f; color: #ffffff; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
+                    desc_html = f"<div style='color: #aaaaaa; font-size: 1rem; text-align: center; margin-top: 6px; line-height: 1.3; width: 100%;'>{desc}</div>" if desc else ""
                     
-                    # Título de producto más grande, en mayúsculas y con brillo neón sutil
-                    st.markdown(f"""
-                        <div style="text-align: center; width: 100%;">
+                    # Ensamblamos todo en un solo contenedor centrado
+                    tarjeta_completa = f"""
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center;">
+                            {img_html}
                             {rec_badge}
-                            <div style="color: #ffffff; font-weight: 900; font-size: 1.7rem; margin-bottom: 8px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>
-                            <div class='precio-highlight'>{prod['precio']}</div>
+                            <div style="color: #ffffff; font-weight: 900; font-size: 1.5rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>
+                            <div style="color: #00ffcc; font-size: 1.6rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>
                             {desc_html}
                         </div>
-                    """, unsafe_allow_html=True)
+                    """
+                    
+                    st.markdown(tarjeta_completa, unsafe_allow_html=True)
                     
         st.write("---")
 
