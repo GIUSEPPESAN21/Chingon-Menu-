@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import base64
+import unicodedata
 
 # --- CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
@@ -19,13 +20,13 @@ header {visibility: hidden !important; display: none !important;}
 footer {visibility: hidden !important; display: none !important;}
 .stApp > header {display: none !important;}
 
-/* Reducir el espacio en blanco superior que deja el header oculto */
+/* Reducir el espacio en blanco superior */
 .block-container {
     padding-top: 1.5rem !important; 
     padding-bottom: 2rem !important;
 }
 
-/* Fondo oscuro para que resalte el Neón */
+/* Fondo oscuro general */
 .stApp { background-color: #0a0a0c; color: #ffffff; }
 
 /* --- TIPOGRAFÍA Y TÍTULOS --- */
@@ -115,18 +116,12 @@ h2 {
     text-shadow: 0 0 8px rgba(255, 0, 127, 0.6); 
 }
 
-/* Eliminar padding extra de markdown */
 .element-container st-emotion-cache-1wmy9hl { margin-bottom: 0px !important; }
 
 /* --- MEDIA QUERIES PARA CELULARES --- */
 @media (max-width: 768px) {
     .block-container { padding-top: 1rem !important; }
-    [data-testid="column"] {
-        width: 100% !important;
-        flex: 1 1 100% !important;
-        max-width: 100% !important;
-        margin-bottom: 20px;
-    }
+    [data-testid="column"] { width: 100% !important; flex: 1 1 100% !important; max-width: 100% !important; margin-bottom: 20px; }
     h1 { font-size: 1.65rem !important; letter-spacing: 1px; margin-top: 5px; }
     h2 { font-size: 1.5rem !important; margin-top: 25px; }
     .promo-box { font-size: 0.95rem; padding: 10px; }
@@ -143,17 +138,44 @@ h2 {
 st.markdown("<h1>💀 CHINGON COCTELES 💀</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 15px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
-# --- FUNCIÓN PARA CONVERTIR IMAGEN A BASE64 ---
+# --- MOTOR INTELIGENTE DE IMÁGENES ---
+def normalizar_texto(texto):
+    """Limpia el texto de tildes, mayúsculas y espacios para una búsqueda perfecta."""
+    if not isinstance(texto, str): return ""
+    texto = texto.lower()
+    # Quitar tildes/acentos
+    texto = unicodedata.normalize('NFKD', texto).encode('ASCII', 'ignore').decode('utf-8')
+    # Quitar símbolos y espacios
+    for char in [" ", "-", "_", "?", "¿", ":", "!", "¡"]:
+        texto = texto.replace(char, "")
+    return texto
+
+@st.cache_data
+def mapear_archivos():
+    """Escanea la carpeta 'fotos' (y la principal) creando un índice fácil de buscar."""
+    mapa = {}
+    carpetas = ["fotos", "."]
+    for carpeta in carpetas:
+        if os.path.exists(carpeta):
+            for archivo in os.listdir(carpeta):
+                if archivo.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    nombre_base = archivo.rsplit('.', 1)[0]
+                    mapa[normalizar_texto(nombre_base)] = os.path.join(carpeta, archivo)
+    return mapa
+
+MAPA_FOTOS = mapear_archivos()
+
 def get_image_base64(filepath):
     try:
         with open(filepath, "rb") as f:
-            data = f.read()
-        return base64.b64encode(data).decode()
-    except Exception as e:
+            return base64.b64encode(f.read()).decode()
+    except Exception:
         return ""
 
-# --- MOTOR INTELIGENTE PARA BUSCAR IMÁGENES ---
 def mostrar_productos(lista_productos):
+    # Recargar el mapa por si subiste fotos nuevas sin reiniciar la app
+    mapa_actualizado = mapear_archivos()
+    
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
         
@@ -161,50 +183,38 @@ def mostrar_productos(lista_productos):
             if i + j < len(lista_productos):
                 with cols[j]:
                     prod = lista_productos[i+j]
-                    prod_id = prod['id']
                     nombre = prod['nombre']
                     precio = prod['precio']
                     desc = prod.get('desc', '')
                     recomendado = prod.get('recomendado', False)
                     
-                    # Limpieza exhaustiva del nombre para buscar archivos (quita símbolos raros)
-                    nombre_limpio = nombre.replace("?", "").replace("¿", "").replace(":", "").strip()
+                    # 1. BÚSQUEDA INTELIGENTE
+                    clave_nombre = normalizar_texto(nombre)
+                    clave_id = normalizar_texto(prod['id'])
                     
-                    # Búsqueda súper optimizada (Busca tanto por el nombre exacto como por el ID de la base de datos)
-                    posibles_rutas = [
-                        f"fotos/{nombre_limpio}.jpeg", f"fotos/{nombre_limpio}.jpg", f"fotos/{nombre_limpio}.png",
-                        f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
-                        f"fotos/{nombre_limpio.lower()}.jpeg", f"fotos/{nombre_limpio.title()}.jpeg",
-                        f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.upper()}.jpeg",
-                        # También busca en la carpeta principal por si acaso
-                        f"{nombre_limpio}.jpeg", f"{nombre_limpio}.jpg", f"{prod_id}.jpeg", f"{prod_id}.jpg"
-                    ]
+                    ruta_img = mapa_actualizado.get(clave_nombre) or mapa_actualizado.get(clave_id)
                     
-                    ruta_img = None
-                    for ruta in posibles_rutas:
-                        if os.path.exists(ruta):
-                            ruta_img = ruta
-                            break
-                    
+                    # 2. RENDERIZADO DE IMAGEN (Ahora con object-fit: contain para NO CORTAR la foto)
                     img_html = ""
                     if ruta_img:
                         b64_img = get_image_base64(ruta_img)
-                        img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin: 0 auto 12px auto; display: block;">'
+                        img_html = f'''
+                        <div style="width: 100%; height: 260px; background-color: #050505; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.4); margin-bottom: 12px; padding: 5px;">
+                            <img src="data:image/jpeg;base64,{b64_img}" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+                        </div>
+                        '''
                     else:
-                        # Búsqueda del logo oficial
-                        posibles_logos = ["CHINGON COCTELES.jpeg", "CHINGON COCTELES.jpg", "fotos/CHINGON COCTELES.jpeg", "fotos/CHINGON COCTELES.jpg"]
-                        logo_path = None
-                        for ruta_logo in posibles_logos:
-                            if os.path.exists(ruta_logo):
-                                logo_path = ruta_logo
-                                break
-                                
-                        if logo_path:
-                            b64_logo = get_image_base64(logo_path)
-                            img_html = f'<img src="data:image/jpeg;base64,{b64_logo}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #222; margin: 0 auto 12px auto; display: block;">'
+                        # Buscar Logo Chingon como respaldo
+                        ruta_logo = mapa_actualizado.get("chingoncocteles")
+                        if ruta_logo:
+                            b64_logo = get_image_base64(ruta_logo)
+                            img_html = f'''
+                            <div style="width: 100%; height: 260px; background-color: #050505; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.4); border: 1px solid #222; margin-bottom: 12px; padding: 5px;">
+                                <img src="data:image/jpeg;base64,{b64_logo}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            </div>
+                            '''
                         else:
-                            # Respaldo en código si no encuentra la foto
-                            img_html = '<div style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 12px auto;"><div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div><div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div><div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div></div>'
+                            img_html = '<div style="width: 100%; height: 260px; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin-bottom: 12px;"><div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div><div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div><div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div></div>'
 
                     rec_badge = "<div style='margin-bottom: 10px;'><span style='background-color: #ff007f; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
                     desc_html = f"<div style='color: #aaaaaa; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.3; width: 100%; max-width: 90%; margin-left: auto; margin-right: auto;'>{desc}</div>" if desc else ""
