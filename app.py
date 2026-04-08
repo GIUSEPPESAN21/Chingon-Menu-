@@ -171,7 +171,6 @@ def get_image_base64(filepath):
         return ""
 
 def mostrar_productos(lista_productos):
-    # Recargar el mapa por si subiste fotos nuevas
     mapa_actualizado = mapear_archivos()
     
     for i in range(0, len(lista_productos), 2):
@@ -191,29 +190,35 @@ def mostrar_productos(lista_productos):
                     
                     ruta_img = mapa_actualizado.get(clave_nombre) or mapa_actualizado.get(clave_id)
                     
-                    # Para evitar el bug de Streamlit donde imprime el HTML en pantalla, 
-                    # todo el código HTML de cada producto está en una SOLA LÍNEA SIN SALTOS (\n).
                     img_html = ""
                     if ruta_img:
                         b64_img = get_image_base64(ruta_img)
-                        img_html = f'<div style="width: 100%; height: 260px; background-color: #050505; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.4); margin-bottom: 12px; padding: 5px;"><img src="data:image/jpeg;base64,{b64_img}" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));"></div>'
+                        img_html = f'''
+                        <div style="width: 100%; height: 260px; background-color: #050505; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.4); margin-bottom: 12px; padding: 5px;">
+                            <img src="data:image/jpeg;base64,{b64_img}" style="max-width: 100%; max-height: 100%; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));">
+                        </div>
+                        '''
                     else:
                         ruta_logo = mapa_actualizado.get("chingoncocteles")
                         if ruta_logo:
                             b64_logo = get_image_base64(ruta_logo)
-                            img_html = f'<div style="width: 100%; height: 260px; background-color: #050505; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.4); border: 1px solid #222; margin-bottom: 12px; padding: 5px;"><img src="data:image/jpeg;base64,{b64_logo}" style="max-width: 100%; max-height: 100%; object-fit: contain;"></div>'
+                            img_html = f'''
+                            <div style="width: 100%; height: 260px; background-color: #050505; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 10px rgba(0,0,0,0.8), 0 4px 10px rgba(0,0,0,0.4); border: 1px solid #222; margin-bottom: 12px; padding: 5px;">
+                                <img src="data:image/jpeg;base64,{b64_logo}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                            </div>
+                            '''
                         else:
                             img_html = '<div style="width: 100%; height: 260px; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin-bottom: 12px;"><div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div><div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div><div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div></div>'
 
                     rec_badge = "<div style='margin-bottom: 10px;'><span style='background-color: #ff007f; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
                     desc_html = f"<div style='color: #aaaaaa; font-size: 1.05rem; text-align: center; margin-top: 8px; line-height: 1.3; width: 100%; max-width: 90%; margin-left: auto; margin-right: auto;'>{desc}</div>" if desc else ""
                     
-                    tarjeta_completa = f'<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 5px;">{img_html}{rec_badge}<div style="color: #ffffff; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div><div style="color: #00ffcc; font-size: 1.7rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>{desc_html}</div>'
+                    tarjeta_completa = f'<div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; text-align: center; padding: 5px;">\n{img_html}\n{rec_badge}\n<div style="color: #ffffff; font-weight: 900; font-size: 1.6rem; margin-bottom: 5px; line-height: 1.2; text-shadow: 0 0 8px rgba(255, 0, 127, 0.4); text-transform: uppercase; letter-spacing: 1px;">{nombre}</div>\n<div style="color: #00ffcc; font-size: 1.7rem; font-weight: 900; margin-bottom: 5px; text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);">{precio}</div>\n{desc_html}\n</div>'
                     
                     st.markdown(tarjeta_completa, unsafe_allow_html=True)
 
 # ==========================================
-# BASE DE DATOS COMPLETA (Sincronizada)
+# BASE DE DATOS COMPLETA (Sincronizada con la carta real)
 # ==========================================
 
 granizados_tradicionales = [
@@ -235,7 +240,6 @@ granizados_tradicionales = [
     {"id": "chido", "nombre": "Chido", "precio": "$16.000", "desc": "Cachaza, Maracuyá y Mango Maduro Con Apariencia Color Amarillo."},
     {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y Fresa Con Apariencia Color Rojo Imperial."},
     {"id": "la_peda", "nombre": "La Peda", "precio": "$16.000", "desc": "Whisky y Tequila Con Apariencia y Brillo Color Dorado."},
-    {"id": "granizado_sin_alcohol", "nombre": "Granizado Sin Alcohol", "precio": "$16.000", "desc": "Preguntar disponibilidad."}
 ]
 
 granizados_cremosos = [
@@ -244,7 +248,7 @@ granizados_cremosos = [
     {"id": "crema_coffee", "nombre": "Crema de Coffee", "precio": "$18.000", "desc": "Granizado cremoso."},
     {"id": "crema_baileys", "nombre": "Crema de Baileys", "precio": "$18.000", "desc": "Granizado cremoso."},
     {"id": "crema_pina", "nombre": "Crema de Piña", "precio": "$18.000", "desc": "Granizado cremoso."},
-    {"id": "explosion_fresas", "nombre": "Explosión de Fresas", "precio": "$25.000", "desc": "Smirnoff con fresas y leche condensada."}
+    {"id": "explosion_fresas", "nombre": "Explosión de Fresas", "precio": "$25.000", "desc": "Smirnoff con fresas y leche condensada."},
 ]
 
 compartir_y_cocteles = [
@@ -252,26 +256,27 @@ compartir_y_cocteles = [
     {"id": "nevecon_gde", "nombre": "Nevecon de Chela (Grande)", "precio": "$70.000", "desc": "Para 7 a 8 Personas."},
     {"id": "nevecon_chingon", "nombre": "Nevecon Chingon", "precio": "$60.000", "desc": "Especialidad de la casa."},
     {"id": "nevecon_chingon_gde", "nombre": "Nevecon Chingon Grande", "precio": "$90.000", "desc": "Especialidad tamaño familiar."},
-    {"id": "puppy", "nombre": "Puppy", "precio": "$100.000", "desc": "Granizado con gomitas, perlas explosivas, bombombum y 2 JP."},
-    {"id": "pecera", "nombre": "La Pecera", "precio": "$50.000", "desc": "Granizado azul, fresas, gomitas y Cerveza Coronita (2 a 3 Personas)."},
+    {"id": "puppy", "nombre": "Puppy", "precio": "$100.000", "desc": "Granizado con gomitas rojas en varias presentaciones, perlas explosivas, bombombum y 2 JP."},
+    {"id": "pecera", "nombre": "La Pecera", "precio": "$50.000", "desc": "Granizado azul, fresas, naranja, gomitas, perlas explosivas y Cerveza Coronita (2 a 3 Personas)."},
     {"id": "cuatazo", "nombre": "Cuatazo", "precio": "$24.000", "desc": "Bebida michelada con Tajín, Gomitas bañadas en Chamoy, Tajín y Manzana verde (Mamoncillo) o Guayaba Manzana."},
+    {"id": "chingon_coctel", "nombre": "Chingon", "precio": "$50.000", "desc": "Tequila, Limón, Sirope Cósmico, Soda. Servido en Botella Exclusiva con Gajos de Limón (2 Personas)."},
     {"id": "margarita", "nombre": "Margarita", "precio": "$20.000", "desc": "Cóctel tradicional."},
     {"id": "alitas", "nombre": "Combo Alitas", "precio": "$18.000", "desc": "5 Alitas + Porción de papas + Jugo Hit en caja."},
     {"id": "nuggets", "nombre": "Combo Nuggets", "precio": "$18.000", "desc": "8 Nuggets + Porción de papas + Jugo Hit en caja."},
-    {"id": "salchipapa", "nombre": "Salchipapa", "precio": "$18.000", "desc": "Porción de papa, salchicha, salsas al gusto, queso derretido y 2 Jugos Hit."}
+    {"id": "salchipapa", "nombre": "Salchipapa", "precio": "$18.000", "desc": "Porción de papa, salchicha, salsas al gusto, queso derretido y 2 Jugos Hit."},
 ]
 
 micheladas_milos = [
-    {"id": "mich_fresa", "nombre": "Michelada de Fresa", "precio": "$15.000", "desc": "Sal, fresas, zumo de limón y hielo."},
+    {"id": "mich_fresa", "nombre": "Michelada de Fresa", "precio": "$15.000", "desc": "Vaso Con Cerveza Michelado Con Sal, Fresas, Zumo de Limón y Hielo."},
     {"id": "mich_sencilla", "nombre": "Michelada Sencilla", "precio": "$8.000", "desc": "Tradicional."},
-    {"id": "mich_enchilada", "nombre": "Michelada Enchilada", "precio": "$19.000", "desc": "Sal, pimienta, mango biche en tajín, Takis."},
-    {"id": "mich_luli", "nombre": "Michelada Luli Chela", "precio": "$16.000", "desc": "Lulo, sirope de lulo, limón y choclitos."},
-    {"id": "mich_mango", "nombre": "Michelada de Mango", "precio": "$15.000", "desc": "Sal, mango, zumo de limón y hielo."},
-    {"id": "mich_maracumango", "nombre": "Michelada Maracumango", "precio": "$15.000", "desc": "Mango biche, maracuyá, limón y hielo."},
+    {"id": "mich_enchilada", "nombre": "Michelada Enchilada", "precio": "$19.000", "desc": "Vaso con Cerveza Michelado Con Sal Pimienta, Mangó Biche Envuelto en Tajín, Zumo de Limón, Hielo y Takis."},
+    {"id": "mich_luli", "nombre": "Michelada Luli Chela", "precio": "$17.000", "desc": "Vaso con Cerveza Michelado Con Sal Pimienta, Lulo, Sirope de Lulo con Zumo de Limón, Hielo y Choclitos."},
+    {"id": "mich_mango", "nombre": "Michelada de Mango", "precio": "$15.000", "desc": "Vaso Con Cerveza Michelado Con Sal, Mango, Zumo de Limón y Hielo."},
+    {"id": "mich_maracumango", "nombre": "Michelada Maracumango", "precio": "$15.000", "desc": "Vaso con Cerveza Michelado Con Sal, Mangó Biche Envuelto, Maracuyá y Zumo de Limón y Hielo."},
     {"id": "mich_cereza", "nombre": "Michelada de Cereza", "precio": "$15.000", "desc": "Vaso Con Cerveza Michelado Con Sal, Cereza, Zumo de Limón y Hielo."},
     {"id": "mich_maracuya", "nombre": "Michelada de Maracuyá", "precio": "$15.000", "desc": "Vaso Con Cerveza Michelado Con Sal, Maracuyá, Zumo de Limón y Hielo."},
-    {"id": "milo_oreo", "nombre": "Milo Oreo", "precio": "$13.000", "desc": "Crema de chocolate, chantilly y galletas Oreo."},
-    {"id": "milo_ramo", "nombre": "Milo Ramito", "precio": "$13.000", "desc": "Milo Con Crema de Chocolate, Chantillí y Cakes de Choco ramo."}
+    {"id": "milo_oreo", "nombre": "Milo Oreo", "precio": "$13.000", "desc": "Milo Con Crema de Chocolate, Chantillí y Galletas Oreo."},
+    {"id": "milo_ramo", "nombre": "Milo Ramito", "precio": "$13.000", "desc": "Milo Con Crema de Chocolate, Chantillí y Cakes de Choco ramo."},
 ]
 
 ramen = [
@@ -285,7 +290,7 @@ ramen = [
     {"id": "ramen_ajinomen_tarro", "nombre": "Ramen Ajinomen Tarro", "precio": "$12.000", "desc": "Incluye palitos chinos."},
     {"id": "ramen_ajinomen_bolsa", "nombre": "Ramen Ajinomen Bolsa", "precio": "$10.000", "desc": "Incluye bowl y palitos chinos."},
     {"id": "ramen_kimchi", "nombre": "Ramen Kimchi", "precio": "$17.000", "desc": "Incluye palitos chinos."},
-    {"id": "ramen_nudels", "nombre": "Ramen Nudels", "precio": "$14.000", "desc": "Incluye palitos chinos."}
+    {"id": "ramen_nudels", "nombre": "Ramen Nudels", "precio": "$14.000", "desc": "Incluye palitos chinos."},
 ]
 
 importados = [
@@ -302,7 +307,10 @@ importados = [
     {"id": "prime", "nombre": "Prime", "precio": "$35.000", "desc": ""},
     {"id": "rockstar", "nombre": "Rockstar", "precio": "$35.000", "desc": ""},
     {"id": "mtn_dew", "nombre": "Mtn Dew", "precio": "$24.000", "desc": ""},
-    {"id": "coffi", "nombre": "Coffi Lata", "precio": "$12.000", "desc": ""}
+    {"id": "coffi", "nombre": "Coffi Lata", "precio": "$12.000", "desc": ""},
+    {"id": "shot_chivas", "nombre": "Shot Chivas", "precio": "$24.000", "desc": ""},
+    {"id": "shot_vodka", "nombre": "Shot Vodka", "precio": "$16.000", "desc": ""},
+    {"id": "shot_jager", "nombre": "Shot Jägermeister", "precio": "$18.000", "desc": ""},
 ]
 
 dulces_importados = [
@@ -332,7 +340,7 @@ dulces_importados = [
     {"id": "ring_pop", "nombre": "Ring Pop", "precio": "$8.000", "desc": ""},
     {"id": "mym", "nombre": "M&M", "precio": "$10.000", "desc": ""},
     {"id": "hershey", "nombre": "Hershey", "precio": "$10.000", "desc": ""},
-    {"id": "nutela", "nombre": "Nutela", "precio": "$4.000", "desc": ""}
+    {"id": "nutela", "nombre": "Nutela", "precio": "$4.000", "desc": ""},
 ]
 
 otras_bebidas_licores = [
@@ -341,25 +349,20 @@ otras_bebidas_licores = [
     {"id": "corona", "nombre": "Corona", "precio": "$12.000", "desc": ""},
     {"id": "gatorade", "nombre": "Gatorade", "precio": "$6.000", "desc": ""},
     {"id": "electrolit", "nombre": "Electrolit", "precio": "$12.000", "desc": ""},
-    {"id": "postobon", "nombre": "Gaseosa Postobon", "precio": "$5.000", "desc": ""},
+    {"id": "postobon", "nombre": "Gaseosa", "precio": "$5.000", "desc": ""},
     {"id": "cocacola", "nombre": "Coca-Cola", "precio": "$6.000", "desc": ""},
     {"id": "agua", "nombre": "Agua", "precio": "$5.000", "desc": ""},
-    {"id": "sodas", "nombre": "Sodas", "precio": "$4.000", "desc": ""},
+    {"id": "sodas", "nombre": "Sodas", "precio": "$5.000", "desc": ""},
     {"id": "soda_italiana", "nombre": "Soda Italiana", "precio": "$14.000", "desc": ""},
     {"id": "smirnoff_botella", "nombre": "Smirnoff", "precio": "$16.000", "desc": ""},
     {"id": "four_loko", "nombre": "Four Loko", "precio": "$24.000", "desc": ""},
     {"id": "jp", "nombre": "JP", "precio": "$16.000", "desc": ""},
-    {"id": "monster_tradicional", "nombre": "Monster Tradicional", "precio": "$14.000", "desc": ""},
+    {"id": "monster_tradicional", "nombre": "Monster", "precio": "$14.000", "desc": ""},
     {"id": "speed_max", "nombre": "Speed Max", "precio": "$5.000", "desc": ""},
     {"id": "caneca_aguardiente", "nombre": "Caneca Aguardiente", "precio": "$40.000", "desc": ""},
     {"id": "botella_aguardiente", "nombre": "Botella Aguardiente", "precio": "$70.000", "desc": ""},
-    {"id": "caneca_aguardiente_amarillo", "nombre": "Caneca Aguardiente Amarillo", "precio": "$50.000", "desc": ""},
     {"id": "botella_aguardiente_amarillo", "nombre": "Botella Aguardiente Amarillo", "precio": "$80.000", "desc": ""},
-    {"id": "shot_chivas", "nombre": "Shot Chivas", "precio": "$24.000", "desc": ""},
-    {"id": "shot_vodka", "nombre": "Shot Vodka", "precio": "$16.000", "desc": ""},
-    {"id": "shot_jager", "nombre": "Shot Jägermeister", "precio": "$18.000", "desc": ""},
-    {"id": "posima_shot", "nombre": "Pósima Shot", "precio": "$7.000", "desc": ""},
-    {"id": "shots_molecular", "nombre": "Shots Molecular", "precio": "$3.000", "desc": ""}
+    {"id": "caneca_aguardiente_amarillo", "nombre": "Caneca Aguardiente Amarillo", "precio": "$50.000", "desc": ""},
 ]
 
 dulceria_extras = [
@@ -368,16 +371,17 @@ dulceria_extras = [
     {"id": "gomas_l", "nombre": "Gomas Enchiladas Tamaño L", "precio": "$19.000", "desc": ""},
     {"id": "jeringa_peq", "nombre": "Jeringa de Veneno Pequeña", "precio": "$3.000", "desc": ""},
     {"id": "jeringa_gde", "nombre": "Jeringa de Veneno Grande", "precio": "$5.000", "desc": ""},
-    {"id": "pocima_peq", "nombre": "Pócima de Veneno Pequeña", "precio": "$3.000", "desc": ""},
-    {"id": "pocima_gde", "nombre": "Pócima de Veneno Grande", "precio": "$5.000", "desc": ""},
+    {"id": "posima_shot", "nombre": "Pósima Shot", "precio": "$7.000", "desc": ""},
+    {"id": "shots_molecular", "nombre": "Shots Molecular", "precio": "$3.000", "desc": ""},
+    {"id": "granizado_sin_alcohol", "nombre": "Granizado Sin Alcohol", "precio": "$16.000", "desc": "Preguntar disponibilidad."},
 ]
 
 # --- NAVEGACIÓN POR PESTAÑAS (TABS) ---
 tabs = st.tabs([
-    "🍹 Granizados", 
-    "🌶️ Micheladas", 
-    "🍻 Compartir", 
-    "🍜 Ramen", 
+    "🍹 Granizados",
+    "🌶️ Micheladas",
+    "🍻 Compartir",
+    "🍜 Ramen",
     "🇺🇸 Importados",
     "🍬 Dulces",
     "🍺 Bebidas",
@@ -388,7 +392,6 @@ with tabs[0]:
     st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.markdown("<h2>Granizados Tradicionales</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_tradicionales)
-    
     st.markdown("<h2>Granizados Cremosos y Dulces</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_cremosos)
 
@@ -415,7 +418,6 @@ with tabs[5]:
 with tabs[6]:
     st.markdown("<h2>Otras Bebidas y Licores</h2>", unsafe_allow_html=True)
     mostrar_productos(otras_bebidas_licores)
-    
     st.markdown("<h2>Dulcería y Extras</h2>", unsafe_allow_html=True)
     mostrar_productos(dulceria_extras)
 
