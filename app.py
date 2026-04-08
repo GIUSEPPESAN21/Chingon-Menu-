@@ -371,14 +371,13 @@ tabs = st.tabs([
     "🌶️ Micheladas", 
     "🍻 Compartir", 
     "🍜 Ramen", 
-    "🇺🇸 Importados",
-    "🍬 Dulces",
+    "🍬 Importados y Dulces",
     "🍺 Bebidas",
     "🎉 Promos"
 ])
 
 with tabs[0]:
-    st.markdown("<div class='promo-box'>Tamaños: 14 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.markdown("<h2>Granizados Tradicionales</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_tradicionales)
     
@@ -398,21 +397,20 @@ with tabs[3]:
     mostrar_productos(ramen)
 
 with tabs[4]:
+    st.markdown("<h2>Dulces Importados</h2>", unsafe_allow_html=True)
+    mostrar_productos(dulces_importados)
+    
     st.markdown("<h2>Bebidas Importadas</h2>", unsafe_allow_html=True)
     mostrar_productos(importados)
 
 with tabs[5]:
-    st.markdown("<h2>Dulces Importados</h2>", unsafe_allow_html=True)
-    mostrar_productos(dulces_importados)
-
-with tabs[6]:
     st.markdown("<h2>Otras Bebidas y Licores</h2>", unsafe_allow_html=True)
     mostrar_productos(otras_bebidas_licores)
     
     st.markdown("<h2>Dulcería y Extras</h2>", unsafe_allow_html=True)
     mostrar_productos(dulceria_extras)
 
-with tabs[7]:
+with tabs[6]:
     st.markdown("<h2>Experiencias y Promociones</h2>", unsafe_allow_html=True)
     st.success("🎨 **¡SOMOS ARTE!** Podrás también pintar mientras disfrutas de un granizado. Pintura en cerámica + Pincel + Vinilo.")
     st.info("🔥 **LUNES DE AMIGOS:** ¡Compra 2 granizados y llevas el 3ro GRATIS!")
