@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Chingon Cocteles | Menú Digital",
     page_icon="💀",
     layout="centered",
-    initial_sidebar_state="collapsed" # Ayuda a dar más espacio en móviles
+    initial_sidebar_state="collapsed"
 )
 
 # --- ESTILOS CSS PERSONALIZADOS (TEMA NEÓN OSCURO & MOBILE FIRST) ---
@@ -127,7 +127,6 @@ h2 {
         max-width: 100% !important;
         margin-bottom: 20px;
     }
-    /* Título principal perfecto para celular (una línea) */
     h1 { font-size: 1.65rem !important; letter-spacing: 1px; margin-top: 5px; }
     h2 { font-size: 1.5rem !important; margin-top: 25px; }
     .promo-box { font-size: 0.95rem; padding: 10px; }
@@ -140,7 +139,7 @@ h2 {
 }
 </style>""", unsafe_allow_html=True)
 
-# --- ENCABEZADO (Renderizado como HTML) ---
+# --- ENCABEZADO ---
 st.markdown("<h1>💀 CHINGON COCTELES 💀</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center; color: #aaaaaa; font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 15px;'>Desliza y selecciona una categoría</p>", unsafe_allow_html=True)
 
@@ -153,7 +152,7 @@ def get_image_base64(filepath):
     except Exception as e:
         return ""
 
-# --- FUNCIÓN PARA MOSTRAR PRODUCTOS ---
+# --- MOTOR INTELIGENTE PARA BUSCAR IMÁGENES ---
 def mostrar_productos(lista_productos):
     for i in range(0, len(lista_productos), 2):
         cols = st.columns(2)
@@ -168,13 +167,17 @@ def mostrar_productos(lista_productos):
                     desc = prod.get('desc', '')
                     recomendado = prod.get('recomendado', False)
                     
-                    nombre_limpio = nombre.replace("?", "")
+                    # Limpieza exhaustiva del nombre para buscar archivos (quita símbolos raros)
+                    nombre_limpio = nombre.replace("?", "").replace("¿", "").replace(":", "").strip()
                     
+                    # Búsqueda súper optimizada (Busca tanto por el nombre exacto como por el ID de la base de datos)
                     posibles_rutas = [
                         f"fotos/{nombre_limpio}.jpeg", f"fotos/{nombre_limpio}.jpg", f"fotos/{nombre_limpio}.png",
                         f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
-                        f"fotos/{prod_id.capitalize()}.jpeg", f"fotos/{prod_id.capitalize()}.jpg",
-                        f"fotos/{nombre_limpio.lower()}.jpeg", f"fotos/{nombre_limpio.title()}.jpeg"
+                        f"fotos/{nombre_limpio.lower()}.jpeg", f"fotos/{nombre_limpio.title()}.jpeg",
+                        f"fotos/{prod_id.lower()}.jpeg", f"fotos/{prod_id.upper()}.jpeg",
+                        # También busca en la carpeta principal por si acaso
+                        f"{nombre_limpio}.jpeg", f"{nombre_limpio}.jpg", f"{prod_id}.jpeg", f"{prod_id}.jpg"
                     ]
                     
                     ruta_img = None
@@ -183,12 +186,12 @@ def mostrar_productos(lista_productos):
                             ruta_img = ruta
                             break
                     
-                    # Armado en UNA sola línea continua para evitar el bug de espacios de Markdown
                     img_html = ""
                     if ruta_img:
                         b64_img = get_image_base64(ruta_img)
                         img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin: 0 auto 12px auto; display: block;">'
                     else:
+                        # Búsqueda del logo oficial
                         posibles_logos = ["CHINGON COCTELES.jpeg", "CHINGON COCTELES.jpg", "fotos/CHINGON COCTELES.jpeg", "fotos/CHINGON COCTELES.jpg"]
                         logo_path = None
                         for ruta_logo in posibles_logos:
@@ -200,6 +203,7 @@ def mostrar_productos(lista_productos):
                             b64_logo = get_image_base64(logo_path)
                             img_html = f'<img src="data:image/jpeg;base64,{b64_logo}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: contain; background-color: #050505; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px solid #222; margin: 0 auto 12px auto; display: block;">'
                         else:
+                            # Respaldo en código si no encuentra la foto
                             img_html = '<div style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; background: #0a0a0c; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border: 1px dashed #444; margin: 0 auto 12px auto;"><div style="font-size: 3.5rem; filter: drop-shadow(0 0 10px rgba(255,0,127,0.6));">💀</div><div style="color: #ff007f; font-weight: 900; font-size: 1.3rem; margin-top: 5px; letter-spacing: 2px; text-shadow: 0 0 8px #ff007f;">CHINGON</div><div style="color: #666; font-size: 0.8rem; margin-top: 5px; font-style: italic;">Foto en camino...</div></div>'
 
                     rec_badge = "<div style='margin-bottom: 10px;'><span style='background-color: #ff007f; color: #ffffff; padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 900; box-shadow: 0 0 10px rgba(255,0,127,0.8); text-transform: uppercase; letter-spacing: 1px;'>⭐ Recomendado</span></div>" if recomendado else ""
@@ -210,17 +214,14 @@ def mostrar_productos(lista_productos):
                     st.markdown(tarjeta_completa, unsafe_allow_html=True)
 
 # ==========================================
-# BASE DE DATOS COMPLETA 
+# BASE DE DATOS COMPLETA (Sincronizada con el PDF)
 # ==========================================
 
 granizados_tradicionales = [
-    # --- RECOMENDADOS Y PRIMEROS ---
     {"id": "catrina", "nombre": "Catrina", "precio": "$16.000", "desc": "Vodka y Whisky Con sabor a Sandia y Fresa Apariencia Color Negro.", "recomendado": True},
     {"id": "701", "nombre": "701", "precio": "$16.000", "desc": "Fourloko Sandia, Whisky y Tequila Con Apariencia Color Fucsia.", "recomendado": True},
     {"id": "belico", "nombre": "Bélico", "precio": "$16.000", "desc": "Fourloko Sabor a Limón, Lima, Naranja, Frambuesa, Notas De Banano y Melocotón Con Apariencia y Brillo Color Azul.", "recomendado": True},
     {"id": "dia_muertos", "nombre": "Día de los Muertos", "precio": "$16.000", "desc": "Champagne, Granadina, Vodka, Tequila y Kola Con Apariencia Color Rojo.", "recomendado": True},
-    
-    # --- DEMÁS SABORES SEGÚN EL PDF ---
     {"id": "sinaloa", "nombre": "Sinaloa", "precio": "$16.000", "desc": "Sminorff De Lulo Con Apariencia Color Verde Selva."},
     {"id": "no_mames", "nombre": "No Mames", "precio": "$16.000", "desc": "Jagermeister y Redbull Con Apariencia Color Caramelo."},
     {"id": "tijuana", "nombre": "Tijuana", "precio": "$16.000", "desc": "Vodka y Algodón De Azúcar Con Apariencia Color Azul Baby."},
@@ -341,7 +342,6 @@ tabs = st.tabs([
 ])
 
 with tabs[0]:
-    # Ajuste según la carta: el tamaño base es de 12 Oz.
     st.markdown("<div class='promo-box'>Tamaños: 12 Oz ($16.000) | 16 Oz ($21.000) | 24 Oz ($26.000)</div>", unsafe_allow_html=True)
     st.markdown("<h2>Granizados Tradicionales</h2>", unsafe_allow_html=True)
     mostrar_productos(granizados_tradicionales)
