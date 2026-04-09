@@ -170,10 +170,11 @@ def mostrar_productos(lista_productos):
                     nombre_limpio = nombre.replace("?", "")
                     
                     posibles_rutas = [
-                        f"fotos/{nombre_limpio}.jpeg", f"fotos/{nombre_limpio}.jpg", f"fotos/{nombre_limpio}.png",
-                        f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png",
-                        f"fotos/{prod_id.capitalize()}.jpeg", f"fotos/{prod_id.capitalize()}.jpg",
-                        f"fotos/{nombre_limpio.lower()}.jpeg", f"fotos/{nombre_limpio.title()}.jpeg"
+                        f"fotos/{nombre_limpio}.jpeg", f"fotos/{nombre_limpio}.jpg", f"fotos/{nombre_limpio}.png", f"fotos/{nombre_limpio}.webp",
+                        f"fotos/{prod_id}.jpeg", f"fotos/{prod_id}.jpg", f"fotos/{prod_id}.png", f"fotos/{prod_id}.webp",
+                        f"fotos/{prod_id.capitalize()}.jpeg", f"fotos/{prod_id.capitalize()}.jpg", f"fotos/{prod_id.capitalize()}.webp",
+                        f"fotos/{nombre_limpio.lower()}.jpeg", f"fotos/{nombre_limpio.lower()}.jpg", f"fotos/{nombre_limpio.lower()}.webp",
+                        f"fotos/{nombre_limpio.title()}.jpeg", f"fotos/{nombre_limpio.title()}.jpg", f"fotos/{nombre_limpio.title()}.webp"
                     ]
                     
                     ruta_img = None
@@ -186,7 +187,8 @@ def mostrar_productos(lista_productos):
                     img_html = ""
                     if ruta_img:
                         b64_img = get_image_base64(ruta_img)
-                        img_html = f'<img src="data:image/jpeg;base64,{b64_img}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin: 0 auto 12px auto; display: block;">'
+                        mime_type = "image/webp" if ruta_img.lower().endswith('.webp') else "image/png" if ruta_img.lower().endswith('.png') else "image/jpeg"
+                        img_html = f'<img src="data:{mime_type};base64,{b64_img}" style="width: 100%; max-width: 320px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.6); margin: 0 auto 12px auto; display: block;">'
                     else:
                         posibles_logos = ["CHINGON COCTELES.jpeg", "CHINGON COCTELES.jpg", "fotos/CHINGON COCTELES.jpeg", "fotos/CHINGON COCTELES.jpg"]
                         logo_path = None
@@ -227,8 +229,7 @@ granizados_tradicionales = [
     {"id": "que_pedo", "nombre": "Que pedo?", "precio": "$16.000", "desc": "Vodka champagne y cereza. Color rojo."},
     {"id": "la_peda", "nombre": "La Peda", "precio": "$16.000", "desc": "Whisky y Tequila Con Apariencia y Brillo Color Dorado."},
     {"id": "carnal", "nombre": "Carnal", "precio": "$16.000", "desc": "Tequila y mango viche. Color verde."},
-    {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y Fresa Con Apariencia Color Rojo Imperial."},
-    {"id": "granizado_sin_alcohol", "nombre": "Granizado Sin Alcohol", "precio": "$16.000", "desc": "Preguntar disponibilidad."}
+    {"id": "chupeta", "nombre": "Chupeta", "precio": "$16.000", "desc": "Whisky y Fresa Con Apariencia Color Rojo Imperial."}
 ]
 
 granizados_cremosos = [
